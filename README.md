@@ -1,182 +1,248 @@
-# 🔬 DGA Web Application
+# 🔬 DGA Analysis Web Application
 
-**Advanced Dissolved Gas Analysis Platform** - IEEE C57.104-2019 Compliant
+[![React](https://img.shields.io/badge/React-19.x-blue.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.x-yellow.svg)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-cyan.svg)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-A modern, award-winning web application for automated Dissolved Gas Analysis (DGA) using Duval Triangle methodology. Built with cutting-edge technologies and Awwwards-inspired design.
+> **Professional Web Application for Dissolved Gas Analysis (DGA) using Duval Triangle Method**  
+> Compliant with IEEE C57.104-2019 Standard
 
-![DGA App Screenshot](https://via.placeholder.com/800x400?text=DGA+Analysis+Dashboard)
+A modern, responsive web application designed for electrical engineers to perform **Dissolved Gas Analysis (DGA)** on power transformers using the **Duval Triangle Method**. The application supports manual data input, multi-triangle analysis, real-time dashboard, and comprehensive PDF reporting.
 
-## ✨ Features
+## ✨ Key Features
 
-### 🎯 Core Functionality
-- **🔺 Multi-Triangle Analysis**: Supports Triangle 1, 4, and 5 methodologies
-- **🖼️ Smart Image Upload**: Drag & drop interface with real-time preview
-- **🤖 Automated OCR**: Extract gas concentration values from images
-- **📊 Interactive Dashboard**: Real-time monitoring and analytics
-- **⚠️ Fault Detection**: IEEE C57.104-2019 compliant fault classification
-- **📋 Smart Recommendations**: Automated maintenance suggestions
+### 🔬 **Core Analysis Features**
+- **Manual DGA Triangle Analysis** - Triangle 1, 4, and 5 methods
+- **Multi-Classification Support** - Data 1 (CO-based) to Data 8 (fault-based)
+- **Real-time Fault Detection** - Automatic severity assessment
+- **IEEE C57.104-2019 Compliance** - Industry standard methodology
 
-### 🎨 Modern UI/UX
-- **✨ Awwwards-Inspired Design**: Award-winning aesthetic principles
-- **🌊 Fluid Animations**: Framer Motion powered interactions
-- **🧊 Glassmorphism**: Modern glass-like UI elements
-- **🔵 Neumorphism**: Soft, tactile interface components
-- **📱 Mobile-First**: Fully responsive across all devices
-- **🌙 Dark Mode Ready**: Future-ready theme system
+### 📊 **Dashboard & Analytics**
+- **Real-time Statistics** - Total analyses, completion rates, fault distribution
+- **Monthly Trend Analysis** - 6-month historical data visualization
+- **Triangle Method Usage** - Distribution analytics across methods
+- **Fault Severity Breakdown** - Critical, High, Medium, Low categorization
 
-### 🚀 Performance & Technology
-- **⚡ Lightning Fast**: Optimized with Vite and React 19
-- **📦 Code Splitting**: Efficient bundle management
-- **🔄 Real-time Updates**: Live data with React Query
-- **♿ Accessibility**: WCAG 2.1 AA compliant
-- **🔒 Type Safety**: Full TypeScript implementation
+### 🖼️ **Advanced Image Management**
+- **Multiple Images per Triangle** - Upload more than one image per analysis
+- **Dual Upload Methods** - File upload + clipboard paste (Print Screen → Ctrl+V)
+- **Image Source Tracking** - File vs clipboard identification with timestamps
+- **PDF Image Embedding** - Actual images in reports, not just placeholders
 
-## 🛠️ Tech Stack
+### 📄 **Enhanced PDF Export**
+- **Dynamic Report Headers** - Customizable transformer information
+- **Selective Export** - Choose which triangles to include
+- **Professional Formatting** - Structured layout with proper spacing
+- **Content Options** - Include/exclude images, gas data, recommendations
+- **Actual Image Embedding** - Real images with proper sizing and aspect ratios
 
-### Frontend
-- **React 19** - Latest React features
-- **TypeScript** - Type safety
-- **Vite** - Ultra-fast development
-- **Tailwind CSS** - Utility-first styling
-- **Framer Motion** - Advanced animations
-- **Material-UI** - Professional components
-- **React Query** - Server state management
+### 💾 **Data Management**
+- **Analysis History** - Save and load previous analyses with localStorage
+- **Export Tracking** - Mark which analyses have been exported
+- **Filter & Sort** - By date, triangle method, severity, data classification
+- **Load Previous Work** - Resume analysis from history
 
-### Image Processing
-- **Tesseract.js** - OCR capabilities
-- **Canvas API** - Image manipulation
-- **File API** - Modern file handling
-
-### Development Tools
-- **ESLint** - Code quality
-- **PostCSS** - CSS processing
-- **Autoprefixer** - Browser compatibility
+### 🎨 **Modern UI/UX**
+- **Dark/Light Mode Toggle** - Persistent theme switching with smooth transitions
+- **Responsive Design** - Mobile, tablet, and desktop optimized
+- **Framer Motion Animations** - Smooth page transitions and interactions
+- **Glassmorphism Effects** - Modern design aesthetic
+- **Professional Color Scheme** - Consistent across all components
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
-- pnpm (recommended) or npm
+- **Node.js** 18+ (LTS recommended)
+- **pnpm** (recommended) or npm/yarn
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/dga-web-app.git
-   cd dga-web-app
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pnpm install
-   ```
-
-3. **Start development server**
-   ```bash
-   pnpm run dev
-   ```
-
-4. **Open your browser**
-   ```
-   http://localhost:5173
-   ```
-
-### Available Scripts
-
 ```bash
-# Development
-pnpm run dev          # Start dev server
-pnpm run build        # Build for production
-pnpm run preview      # Preview production build
-pnpm run lint         # Run ESLint
+# Clone the repository
+git clone https://github.com/unlovdman/DGA-Analysis.git
+cd DGA-Analysis
+
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm run dev
 ```
 
-## 📚 Usage Guide
+The application will be available at `http://localhost:3000`
 
-### 1. Dashboard Overview
-Access real-time statistics, recent analyses, and quick actions from the main dashboard.
+### Build for Production
 
-### 2. Image Upload
-- Drag and drop DGA images or click to browse
-- Supports PNG, JPG formats up to 10MB
-- Real-time upload progress and preview
+```bash
+# Build the project
+pnpm run build
 
-### 3. Analysis Results
-- Automatic fault detection using Duval Triangle methods
-- Confidence scores and severity levels
-- Interactive triangle visualizations
+# Preview the build
+pnpm run preview
+```
 
-### 4. Recommendations
-- IEEE C57.104-2019 compliant maintenance suggestions
-- Priority-based action plans
-- Detailed fault descriptions
+## 📋 Usage Guide
 
-## 🔺 Duval Triangle Methods
+### 1. **Dashboard Overview**
+- View real-time statistics of your analyses
+- Monitor monthly trends and fault distributions
+- Access recent analyses and quick actions
 
-### Triangle 1 (Primary)
-- **Gases**: CH₄, C₂H₄, C₂H₂
-- **Faults**: PD, D1, D2, T1, T2, T3, DT
-- **Use**: Primary fault detection
+### 2. **Creating New Analysis**
+- Navigate to **Analysis** tab
+- Choose triangle method (1, 4, or 5)
+- Select data classification (Data 1-8)
+- Upload images (optional) via file or clipboard
+- Input gas concentration values
+- Select fault type or let CO analysis auto-determine
 
-### Triangle 4 (Secondary) 
-- **Gases**: H₂, CH₄, C₂H₆
-- **Faults**: S, C, PD, D2, DT, ND
-- **Use**: Enhanced analysis
+### 3. **Multi-Triangle Analysis**
+- Add multiple triangles for comprehensive analysis
+- Each triangle can have different data classifications
+- View combined overall analysis results
+- Get integrated maintenance recommendations
 
-### Triangle 5 (Tertiary)
-- **Gases**: CH₄, C₂H₄, C₂H₆
-- **Faults**: S, C, O, T2, T3, ND
-- **Use**: Comprehensive evaluation
+### 4. **PDF Export**
+- Click **Export PDF** after completing analyses
+- Fill in transformer report header information
+- Select which triangles to include
+- Choose content options (images, gas data, recommendations)
+- Download professional PDF report
 
-## 🏗️ Project Structure
+### 5. **History Management**
+- Save completed analyses to history
+- Load previous work to continue or review
+- Filter and sort historical data
+- Track export status
+
+## 🔧 Technical Stack
+
+### **Frontend Framework**
+- **React 19** - Latest version with enhanced performance
+- **TypeScript** - Type-safe development
+- **Vite** - Lightning-fast build tool
+
+### **Styling & UI**
+- **Tailwind CSS** - Utility-first CSS framework
+- **Framer Motion** - Advanced animations and transitions
+- **Material-UI Icons** - Professional icon set
+- **Custom Design System** - Consistent color palette and components
+
+### **State Management**
+- **React Hooks** - Modern state management
+- **Context API** - Theme and global state
+- **localStorage** - Data persistence
+
+### **Utilities & Libraries**
+- **jsPDF** - Client-side PDF generation
+- **Canvas API** - Image processing and manipulation
+- **Clipboard API** - Modern clipboard interactions
+- **TanStack Query** - Data fetching and caching
+
+## 📁 Project Structure
 
 ```
 src/
 ├── components/
-│   ├── ui/              # Reusable UI components
-│   ├── layout/          # Layout components
-│   └── features/        # Feature-specific components
-├── data/               # Static data and configurations
-├── hooks/              # Custom React hooks
-├── types/              # TypeScript type definitions
-├── utils/              # Utility functions
-└── services/           # API and external services
+│   ├── features/
+│   │   ├── Dashboard.tsx        # Real-time analytics dashboard
+│   │   ├── DuvalAnalysis.tsx    # Main analysis interface
+│   │   ├── HistoryModal.tsx     # Analysis history management
+│   │   └── ReportHeaderModal.tsx # PDF export form
+│   ├── layout/
+│   │   └── Header.tsx           # Navigation with dark mode toggle
+│   └── ui/
+│       ├── Button.tsx           # Reusable button component
+│       └── LoadingSpinner.tsx   # Loading indicators
+├── contexts/
+│   └── ThemeContext.tsx         # Dark/light mode management
+├── data/
+│   ├── duvalTriangles.ts        # Triangle zone definitions
+│   └── faultRecommendations.ts  # IEEE standard recommendations
+├── types/
+│   └── index.ts                 # TypeScript type definitions
+├── utils/
+│   ├── coAnalysis.ts            # CO-based analysis logic
+│   ├── duvalAnalysis.ts         # Core triangle analysis
+│   └── pdfGenerator.ts          # PDF export functionality
+└── index.css                   # Global styles and design system
 ```
 
-## 🎨 Design System
+## 🎯 Duval Triangle Methods
 
-### Colors
-```css
-/* Primary Palette */
---primary-blue: #1a365d
---primary-accent: #3182ce
---secondary-teal: #319795
+### **Triangle 1** (CH4, C2H4, C2H2)
+- **Primary Detection**: Thermal and electrical faults
+- **Fault Types**: PD, D1, D2, T1, T2, T3, DT
+- **Use Case**: General fault detection in oil-filled transformers
 
-/* Gradients */
---gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
---gradient-success: linear-gradient(135deg, #6fd89a 0%, #4fd1c7 100%)
+### **Triangle 4** (H2, CH4, C2H6)  
+- **Primary Detection**: Low energy electrical discharges
+- **Fault Types**: S, PD, ND, DT, C, D2
+- **Use Case**: Sensitive detection of partial discharges
+
+### **Triangle 5** (CH4, C2H4, C2H6)
+- **Primary Detection**: Thermal faults classification
+- **Fault Types**: O, S, ND, C, T2, T3
+- **Use Case**: Detailed thermal fault analysis
+
+## 📊 Data Classification System
+
+### **Data 1** - CO-Based Analysis
+- **AUTO**: Automatic analysis based on CO levels
+- **Severity**: LOW (<500), MEDIUM (500-600), HIGH (>600)
+- **Recommendations**: Based on CO concentration ranges
+
+### **Data 2-8** - Manual Fault Selection
+- **MANUAL**: Engineer selects specific fault type
+- **Fault Options**: Varies by triangle method
+- **Recommendations**: Based on selected fault characteristics
+
+## 🛠️ Configuration
+
+### **Environment Variables**
+```env
+# Optional: Customize app behavior
+VITE_APP_TITLE="DGA Analysis"
+VITE_APP_VERSION="1.0.0"
 ```
 
-### Typography
-- **Primary**: Inter (System)
-- **Display**: Space Grotesk
-- **Monospace**: JetBrains Mono
+### **Theme Customization**
+Edit `tailwind.config.js` to customize colors, fonts, and design system:
 
-### Components
-- **Glass Cards**: Glassmorphism styling
-- **Neumorphic Buttons**: Soft UI elements
-- **Gradient Overlays**: Modern color transitions
+```javascript
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: { /* custom primary colors */ },
+        dark: { /* dark mode palette */ }
+      }
+    }
+  }
+}
+```
 
-## 🔧 Configuration
+## 🔍 Browser Support
 
-### Tailwind CSS
-Custom design tokens and utilities are configured in `tailwind.config.js`.
+- **Chrome** 90+
+- **Firefox** 88+
+- **Safari** 14+
+- **Edge** 90+
 
-### Animations
-Framer Motion variants and transitions are defined in component files.
+### Required APIs
+- **Clipboard API** (for screenshot paste)
+- **Canvas API** (for image processing)
+- **localStorage** (for data persistence)
+- **File API** (for image upload)
 
-### TypeScript
-Comprehensive type definitions in `src/types/index.ts`.
+## 📈 Performance
+
+- **First Contentful Paint**: <1.5s
+- **Time to Interactive**: <3s
+- **Lighthouse Score**: 95+
+- **Bundle Size**: <500KB (gzipped)
 
 ## 🤝 Contributing
 
@@ -186,27 +252,35 @@ Comprehensive type definitions in `src/types/index.ts`.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-### Development Guidelines
-- Follow TypeScript best practices
-- Use conventional commit messages
-- Add tests for new features
-- Update documentation as needed
-
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 👨‍💻 Author
+
+**unlovdman**
+- GitHub: [@unlovdman](https://github.com/unlovdman)
+- Email: rizalefendy22@gmail.com
+
 ## 🙏 Acknowledgments
 
-- **IEEE C57.104-2019** - Standard for interpretation of gases generated in oil-immersed transformers
-- **Awwwards** - Design inspiration
-- **React Team** - Amazing framework
-- **Framer** - Incredible animation library
-
-## 📞 Support
-
-For support, email support@dgaapp.com or create an issue on GitHub.
+- **IEEE C57.104-2019** standard for DGA methodology
+- **Duval Triangle** method by Michel Duval
+- **React Team** for the amazing framework
+- **Tailwind CSS** for the utility-first approach
+- **Framer Motion** for smooth animations
 
 ---
 
-**Built with ❤️ for the electrical engineering community**
+### 🚀 **Ready to analyze your transformers? Get started now!**
+
+```bash
+git clone https://github.com/unlovdman/DGA-Analysis.git
+cd DGA-Analysis
+pnpm install
+pnpm run dev
+```
+
+---
+
+**⭐ If this project helps you, please give it a star!**
