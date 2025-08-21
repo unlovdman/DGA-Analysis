@@ -54,23 +54,23 @@ A modern, responsive web application designed for electrical engineers to perfor
 ## 📸 Screenshots
 
 ### 🏠 **Dashboard Overview**
-![Dashboard](https://ibb.co.com/Q7kg18hQ)
+![Dashboard](https://i.ibb.co/Q7kg18hQ/image.png)
 *Real-time analytics dashboard showing total analyses, completion rates, monthly trends, and fault distribution statistics with modern glassmorphism design*
 
 ### 🔬 **DGA Analysis Interface**
-![Analysis Interface](https://ibb.co.com/23Mf84qJ)
+![Analysis Interface](https://i.ibb.co/23Mf84qJ/image.png)
 *Main analysis interface featuring triangle method selection, gas concentration inputs, image upload capabilities, and real-time fault detection*
 
 ### 📊 **Multi-Triangle Analysis**
-![Multi-Triangle Analysis](https://ibb.co.com/3mf81QHq)
+![Multi-Triangle Analysis](https://i.ibb.co/3mf81QHq/image.png)
 *Comprehensive multi-triangle analysis view showing Triangle 1, 4, and 5 methods with integrated results and maintenance recommendations*
 
 ### 📄 **PDF Export & Reports**
-![PDF Export](https://ibb.co.com/ynC0mv4h)
+![PDF Export](https://i.ibb.co/ynC0mv4h/image.png)
 *Professional PDF export interface with customizable transformer information, selective triangle inclusion, and content options for generating comprehensive reports*
 
 ### 💾 **Analysis History Management**
-![History Management](https://ibb.co.com/bMZYmfYy)
+![History Management](https://i.ibb.co/bMZYmfYy/image.png)
 *Analysis history dashboard with filtering, sorting capabilities, export tracking, and the ability to load previous work for review or continuation*
 
 ## 🚀 Quick Start
