@@ -1090,79 +1090,93 @@ const DuvalAnalysis: React.FC = () => {
                         isDark ? 'text-dark-text' : 'text-gray-700'
                       }`}>Upload Gambar (Opsional)</h4>
                       {triangle.images.length > 0 ? (
-                        <div className="space-y-4">
-                          {/* Image Grid */}
-                          <div className="grid grid-cols-2 gap-3">
-                            {triangle.images.map(img => (
-                              <div key={img.id} className="relative group">
-                                <img
-                                  src={img.imageUrl}
-                                  alt={`Triangle ${triangle.triangleMethod}`}
-                                  className="w-full h-24 object-cover rounded-lg border border-gray-200 group-hover:border-primary-accent transition-colors"
-                                />
-                                <div className="absolute top-1 right-1 flex space-x-1">
-                                  <div className="bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 text-xs flex items-center">
-                                    {getSourceIcon(img.source)}
-                                    <span className="ml-1">{img.source === 'clipboard' ? 'Clip' : 'File'}</span>
-                                  </div>
-                                  <button
-                                    onClick={() => {
-                                      setAnalysisState(prev => ({
-                                        ...prev,
-                                        triangles: prev.triangles.map(t =>
-                                          t.id === triangle.id ? {
-                                            ...t,
-                                            images: t.images.filter(i => i.id !== img.id)
-                                          } : t
-                                        )
-                                      }));
-                                    }}
-                                    className="p-1 bg-red-100 hover:bg-red-200 rounded-full transition-colors"
-                                  >
-                                    <Delete className="w-3 h-3 text-red-600" />
-                                  </button>
-                                </div>
-                                <div className="absolute bottom-1 left-1 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                                  {img.uploadedAt instanceof Date 
-                                    ? img.uploadedAt.toLocaleDateString('id-ID')
-                                    : new Date(img.uploadedAt).toLocaleDateString('id-ID')
-                                  }
-                                </div>
-                              </div>
-                            ))}
+                        <div className="space-y-3">
+                          <div className={`text-sm font-medium border-b pb-2 ${
+                            isDark ? 'text-dark-text border-dark-border' : 'text-gray-700 border-gray-200'
+                          }`}>
+                            📎 Attached Images ({triangle.images.length})
                           </div>
-
-                          {/* Add More Images Buttons */}
-                          <div className="flex gap-2">
-                            <div className="flex-1">
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => handleFileUpload(e, triangle.id)}
-                                className="hidden"
-                                id={`add-file-${triangle.id}`}
-                                multiple
+                          
+                          {triangle.images.map((img, imgIndex) => (
+                            <div key={img.id} className={`p-3 border rounded ${
+                              isDark ? 'border-dark-border bg-dark-surface' : 'border-gray-200 bg-gray-50'
+                            }`}>
+                              <div className="flex justify-between items-start mb-2">
+                                <span className={`text-sm font-medium ${
+                                  isDark ? 'text-dark-text' : 'text-gray-900'
+                                }`}>
+                                  Image {imgIndex + 1} ({img.source === 'clipboard' ? 'Clipboard' : 'File'})
+                                </span>
+                                <button
+                                  onClick={() => {
+                                    setAnalysisState(prev => ({
+                                      ...prev,
+                                      triangles: prev.triangles.map(t =>
+                                        t.id === triangle.id ? {
+                                          ...t,
+                                          images: t.images.filter(i => i.id !== img.id)
+                                        } : t
+                                      )
+                                    }));
+                                  }}
+                                  className="text-red-500 hover:text-red-700 p-1"
+                                  title="Delete Image"
+                                >
+                                  <Delete className="w-4 h-4" />
+                                </button>
+                              </div>
+                              
+                              <img
+                                src={img.imageUrl}
+                                alt={`Triangle ${triangle.triangleMethod} - Image ${imgIndex + 1}`}
+                                className="w-full border rounded"
+                                style={{ maxHeight: '200px', objectFit: 'contain' }}
                               />
-                              <label
-                                htmlFor={`add-file-${triangle.id}`}
-                                className="flex items-center justify-center w-full py-2 px-3 border border-gray-300 rounded-lg hover:border-primary-accent hover:bg-blue-50 transition-colors cursor-pointer text-sm"
-                              >
-                                <CloudUpload className="w-4 h-4 mr-2" />
-                                Add More Files
-                              </label>
+                              
+                              <div className={`text-xs mt-2 ${
+                                isDark ? 'text-dark-muted' : 'text-gray-500'
+                              }`}>
+                                Uploaded: {img.uploadedAt instanceof Date 
+                                  ? img.uploadedAt.toLocaleDateString('id-ID')
+                                  : new Date(img.uploadedAt).toLocaleDateString('id-ID')
+                                }
+                              </div>
                             </div>
+                          ))}
+
+                          {/* Add More Images */}
+                          <div className="flex gap-2 pt-2">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleFileUpload(e, triangle.id)}
+                              className="hidden"
+                              id={`add-file-${triangle.id}`}
+                              multiple
+                            />
+                            <label
+                              htmlFor={`add-file-${triangle.id}`}
+                              className={`flex-1 text-center py-2 px-3 border rounded cursor-pointer text-sm ${
+                                isDark
+                                  ? 'border-dark-border hover:bg-dark-surface text-dark-text'
+                                  : 'border-gray-300 hover:bg-gray-50 text-gray-700'
+                              }`}
+                            >
+                              <CloudUpload className="w-4 h-4 inline mr-2" />
+                              Add Files
+                            </label>
                             
                             <button
                               onClick={() => handlePasteToTriangle(triangle.id)}
-                              className="flex items-center px-3 py-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg transition-colors text-sm"
+                              className={`py-2 px-3 border rounded text-sm ${
+                                isDark
+                                  ? 'border-green-600 bg-green-700 text-white hover:bg-green-600'
+                                  : 'border-green-300 bg-green-100 text-green-700 hover:bg-green-200'
+                              }`}
                             >
-                              <ContentPaste className="w-4 h-4 mr-2" />
-                              Paste More
+                              <ContentPaste className="w-4 h-4 inline mr-1" />
+                              Paste
                             </button>
-                          </div>
-
-                          <div className="text-xs text-gray-500 text-center">
-                            {triangle.images.length} image(s) uploaded • Click image to view full size
                           </div>
                         </div>
                       ) : (
@@ -1288,25 +1302,35 @@ const DuvalAnalysis: React.FC = () => {
                     {triangle.dataClassification === 'Data 1' ? (
                       // CO Analysis for Data 1
                       <div>
-                        <h4 className="font-semibold text-gray-700 mb-4">CO Analysis (Data 1)</h4>
+                        <h4 className={`font-semibold mb-4 ${
+                          isDark ? 'text-dark-text' : 'text-gray-700'
+                        }`}>CO Analysis (Data 1)</h4>
                         {triangle.coAnalysisResult ? (
                           <div className={`p-4 rounded-lg border ${
-                            triangle.coAnalysisResult.severity === 'HIGH' ? 'bg-red-50 border-red-200' :
-                            triangle.coAnalysisResult.severity === 'MEDIUM' ? 'bg-yellow-50 border-yellow-200' :
-                            'bg-green-50 border-green-200'
+                            triangle.coAnalysisResult.severity === 'HIGH' 
+                              ? isDark ? 'bg-red-900/20 border-red-700/30 text-red-300' : 'bg-red-50 border-red-200 text-red-800'
+                              : triangle.coAnalysisResult.severity === 'MEDIUM' 
+                                ? isDark ? 'bg-yellow-900/20 border-yellow-700/30 text-yellow-300' : 'bg-yellow-50 border-yellow-200 text-yellow-800'
+                                : isDark ? 'bg-green-900/20 border-green-700/30 text-green-300' : 'bg-green-50 border-green-200 text-green-800'
                           }`}>
                             <div className="font-bold text-sm mb-2">
                               {triangle.coAnalysisResult.description}
                             </div>
-                            <div className="text-xs text-gray-600 mb-2">
+                            <div className={`text-xs mb-2 ${
+                              isDark ? 'text-dark-muted' : 'text-gray-600'
+                            }`}>
                               CO Level: {triangle.coAnalysisResult.coLevel} ppm
                             </div>
-                            <div className="text-xs text-gray-600">
+                            <div className={`text-xs ${
+                              isDark ? 'text-dark-muted' : 'text-gray-600'
+                            }`}>
                               Resampling: {triangle.coAnalysisResult.resamplingInterval}
                             </div>
                           </div>
                         ) : (
-                          <div className="text-sm text-gray-500">
+                          <div className={`text-sm ${
+                            isDark ? 'text-dark-muted' : 'text-gray-500'
+                          }`}>
                             Input CO value untuk analisis otomatis
                           </div>
                         )}
@@ -1314,13 +1338,19 @@ const DuvalAnalysis: React.FC = () => {
                     ) : (
                       // Fault Selection for Data 2+
                       <div>
-                        <h4 className="font-semibold text-gray-700 mb-4">
+                        <h4 className={`font-semibold mb-4 ${
+                          isDark ? 'text-dark-text' : 'text-gray-700'
+                        }`}>
                           Pilih Fault Type (Data 2+)
                         </h4>
                         <select
                           value={triangle.selectedFault || ''}
                           onChange={(e) => updateFaultSelection(triangle.id, e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-accent focus:border-transparent mb-4"
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-accent focus:border-transparent mb-4 transition-colors duration-300 ${
+                            isDark 
+                              ? 'border-dark-border bg-dark-surface text-dark-text' 
+                              : 'border-gray-300 bg-white text-gray-900'
+                          }`}
                         >
                           <option value="">-- Pilih Fault --</option>
                           {getFaultOptions(triangle.triangleMethod).map(fault => (

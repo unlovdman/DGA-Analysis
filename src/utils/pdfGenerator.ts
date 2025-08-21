@@ -20,69 +20,116 @@ const getImageBase64 = (imageUrl: string): Promise<{ dataUrl: string; width: num
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      // Calculate optimal size for PDF (max width 100px, max height 80px)
-      const maxWidth = 100;
-      const maxHeight = 80;
+      if (!ctx) {
+        reject(new Error('Cannot get canvas context'));
+        return;
+      }
+      
+      // Use much larger dimensions to preserve original quality
+      const maxWidth = 400;   // Much larger for original resolution
+      const maxHeight = 300;  // Much larger for original resolution
       let { width, height } = img;
       
-      // Maintain aspect ratio
-      if (width > maxWidth) {
-        height = (height * maxWidth) / width;
-        width = maxWidth;
-      }
-      if (height > maxHeight) {
-        width = (width * maxHeight) / height;
-        height = maxHeight;
+      // Calculate scaling - only scale down if image is really large
+      const originalWidth = width;
+      const originalHeight = height;
+      const aspectRatio = width / height;
+      
+      // Only scale down if the image is significantly larger than our max
+      if (width > maxWidth || height > maxHeight) {
+        if (aspectRatio > maxWidth / maxHeight) {
+          // Image is wider relative to our max dimensions
+          width = maxWidth;
+          height = maxWidth / aspectRatio;
+        } else {
+          // Image is taller relative to our max dimensions
+          height = maxHeight;
+          width = maxHeight * aspectRatio;
+        }
       }
       
-      canvas.width = width;
-      canvas.height = height;
-      ctx?.drawImage(img, 0, 0, width, height);
+      // Don't enforce minimum size - let small images stay small
+      // This preserves the original character of the image
+      
+      // Round to whole numbers
+      width = Math.round(width);
+      height = Math.round(height);
+      
+      // Use high resolution canvas (3x for ultra-crisp quality)
+      const scale = 3; // Increased to 3x for maximum quality
+      canvas.width = width * scale;
+      canvas.height = height * scale;
+      
+      // Configure maximum quality rendering
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      
+      // Scale context to match high-res canvas
+      ctx.scale(scale, scale);
+      
+      // Fill with white background for clean appearance
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Draw image with maximum quality
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      // Convert to maximum quality JPEG
+      const dataUrl = canvas.toDataURL('image/jpeg', 1.0); // Maximum quality (no compression)
       
       resolve({
-        dataUrl: canvas.toDataURL('image/jpeg', 0.8),
+        dataUrl,
         width,
         height
       });
     };
-    img.onerror = reject;
-    img.src = imageUrl;
+    img.onerror = () => reject(new Error('Failed to load image'));
+    
+    // Handle different image sources
+    if (imageUrl.startsWith('blob:')) {
+      img.src = imageUrl;
+    } else if (imageUrl.startsWith('data:')) {
+      img.src = imageUrl;
+    } else {
+      // For regular URLs, add timestamp to avoid cache issues
+      img.src = imageUrl + (imageUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+    }
   });
 };
 
 export const generateDGAPDF = async (data: PDFGenerationData): Promise<void> => {
   const doc = new jsPDF();
-  let yPosition = 20;
+  let yPosition = 15; // Reduced from 20
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
-  const margin = 20;
+  const margin = 15; // Reduced from 20
   const contentWidth = pageWidth - (2 * margin);
 
-  // Helper function to check page break
+  // Helper function to check page break with tighter margins
   const checkPageBreak = (requiredSpace: number) => {
-    if (yPosition + requiredSpace > pageHeight - 30) {
+    if (yPosition + requiredSpace > pageHeight - 25) { // Reduced bottom margin
       doc.addPage();
-      yPosition = 20;
+      yPosition = 15; // Reduced top margin for new pages
     }
   };
 
-  // Title Section with border
-  doc.setFontSize(18);
+  // Compact Title Section
+  doc.setFontSize(16); // Reduced from 18
   doc.setFont('helvetica', 'bold');
   doc.text('DGA ANALYSIS REPORT', pageWidth / 2, yPosition, { align: 'center' });
   
-  // Add underline
-  doc.setLineWidth(0.5);
-  doc.line(margin, yPosition + 3, pageWidth - margin, yPosition + 3);
-  yPosition += 15;
+  // Thinner underline
+  doc.setLineWidth(0.3);
+  doc.line(margin, yPosition + 2, pageWidth - margin, yPosition + 2);
+  yPosition += 10; // Reduced from 15
 
-  // Sample Data Section with table-like format
-  doc.setFontSize(12);
+  // Compact Sample Data Section
+  doc.setFontSize(11); // Reduced from 12
   doc.setFont('helvetica', 'bold');
   doc.text('Sample Data', margin, yPosition);
-  yPosition += 10;
+  yPosition += 7; // Reduced from 10
 
-  // Create bordered table for header data
+  // More compact table
   const headerData = [
     ['Sampling Date', data.reportHeader.samplingDate, 'Manufacture', data.reportHeader.manufacture],
     ['ID Trafo', data.reportHeader.idTrafo, 'Oil Brand', data.reportHeader.oilBrand],
@@ -92,14 +139,13 @@ export const generateDGAPDF = async (data: PDFGenerationData): Promise<void> => 
     ['Category', data.reportHeader.category, 'Sampling Point', data.reportHeader.samplingPoint]
   ];
 
-  // Draw table borders
   const tableStartY = yPosition;
-  const rowHeight = 6;
-  const colWidths = [38, 48, 38, 48];
+  const rowHeight = 5; // Reduced from 6
+  const colWidths = [36, 46, 36, 46]; // Slightly reduced
   
   doc.setLineWidth(0.2);
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
+  doc.setFontSize(7); // Reduced from 8
 
   headerData.forEach((row, rowIndex) => {
     const currentY = tableStartY + (rowIndex * rowHeight);
@@ -107,186 +153,245 @@ export const generateDGAPDF = async (data: PDFGenerationData): Promise<void> => 
     // Draw row border
     doc.rect(margin, currentY - 1, contentWidth, rowHeight);
     
-    // Add data
-    let xPos = margin + 2;
+    // Add data with tighter spacing
+    let xPos = margin + 1.5;
     row.forEach((cell, cellIndex) => {
       if (cellIndex % 2 === 0) {
         doc.setFont('helvetica', 'bold');
       } else {
         doc.setFont('helvetica', 'normal');
       }
-      doc.text(cell, xPos, currentY + 3);
+      doc.text(cell, xPos, currentY + 2.5);
       xPos += colWidths[cellIndex];
     });
   });
 
-  yPosition = tableStartY + (headerData.length * rowHeight) + 10;
+  yPosition = tableStartY + (headerData.length * rowHeight) + 8; // Reduced spacing
 
-  // Analysis Results Section
-  checkPageBreak(30);
-  doc.setFontSize(12);
+  // Compact Analysis Results Section
+  checkPageBreak(25);
+  doc.setFontSize(11); // Reduced from 12
   doc.setFont('helvetica', 'bold');
   doc.text('Analysis Results', margin, yPosition);
-  yPosition += 10;
+  yPosition += 8; // Reduced from 10
 
   for (const triangle of data.triangles) {
-    checkPageBreak(60);
+    checkPageBreak(45); // Reduced space requirement
 
-    // Triangle header with background
-    doc.setFillColor(240, 248, 255); // Light blue background
-    doc.rect(margin, yPosition - 3, contentWidth, 8, 'F');
-    doc.setFontSize(11);
+    // Compact triangle header
+    doc.setFillColor(245, 250, 255); // Lighter background
+    doc.rect(margin, yPosition - 2, contentWidth, 6, 'F'); // Reduced height
+    doc.setFontSize(10); // Reduced from 11
     doc.setFont('helvetica', 'bold');
-    doc.text(`Triangle ${triangle.triangleMethod} - ${triangle.dataClassification}`, margin + 3, yPosition + 2);
-    yPosition += 10;
+    doc.text(`Triangle ${triangle.triangleMethod} - ${triangle.dataClassification}`, margin + 2, yPosition + 1.5);
+    yPosition += 7; // Reduced from 10
 
-    doc.setFontSize(9);
+    doc.setFontSize(8); // Reduced from 9
     doc.setFont('helvetica', 'normal');
 
-    // Analysis Result
+    // More compact analysis result
     if (triangle.dataClassification === 'Data 1' && triangle.coAnalysisResult) {
       doc.setFont('helvetica', 'bold');
-      doc.text('CO Analysis Result:', margin + 5, yPosition);
+      doc.text('CO Analysis Result:', margin + 3, yPosition);
       doc.setFont('helvetica', 'normal');
+      yPosition += 4;
+      doc.text(`• Severity: ${triangle.coAnalysisResult.severity}`, margin + 6, yPosition);
+      yPosition += 3;
+      doc.text(`• CO Level: ${triangle.coAnalysisResult.coLevel} ppm`, margin + 6, yPosition);
+      yPosition += 3;
+      doc.text(`• Resampling: ${triangle.coAnalysisResult.resamplingInterval}`, margin + 6, yPosition);
       yPosition += 5;
-      doc.text(`• Severity: ${triangle.coAnalysisResult.severity}`, margin + 8, yPosition);
-      yPosition += 4;
-      doc.text(`• CO Level: ${triangle.coAnalysisResult.coLevel} ppm`, margin + 8, yPosition);
-      yPosition += 4;
-      doc.text(`• Resampling Interval: ${triangle.coAnalysisResult.resamplingInterval}`, margin + 8, yPosition);
-      yPosition += 6;
     } else if (triangle.selectedFault) {
       doc.setFont('helvetica', 'bold');
-      doc.text('Fault Analysis Result:', margin + 5, yPosition);
+      doc.text('Fault Analysis Result:', margin + 3, yPosition);
       doc.setFont('helvetica', 'normal');
+      yPosition += 4;
+      doc.text(`• Fault Type: ${triangle.selectedFault}`, margin + 6, yPosition);
       yPosition += 5;
-      doc.text(`• Fault Type: ${triangle.selectedFault}`, margin + 8, yPosition);
-      yPosition += 6;
     }
 
-    // Gas Data in organized format
+    // Compact gas data
     if (data.includeGasData && Object.keys(triangle.gasConcentrations).length > 0) {
-      checkPageBreak(40);
+      checkPageBreak(30);
       doc.setFont('helvetica', 'bold');
-      doc.text('Gas Concentrations:', margin + 5, yPosition);
-      yPosition += 8;
+      doc.text('Gas Concentrations:', margin + 3, yPosition);
+      yPosition += 6;
       
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
+      doc.setFontSize(7); // Smaller font for gas data
       
-      // Create gas data in columns
+      // More compact gas data layout
       const gasEntries = Object.entries(triangle.gasConcentrations).filter(([_, value]) => value && value > 0);
-      const cols = 3;
+      const cols = 4; // Increased columns for better space usage
       const colWidth = contentWidth / cols;
       
       gasEntries.forEach(([gas, value], index) => {
         const col = index % cols;
         const row = Math.floor(index / cols);
-        const xPos = margin + 10 + (col * colWidth);
-        const yPos = yPosition + (row * 5);
+        const xPos = margin + 6 + (col * colWidth);
+        const yPos = yPosition + (row * 4); // Reduced row spacing
         
-        doc.text(`${gas.toUpperCase()}: ${value} ppm`, xPos, yPos);
+        doc.text(`${gas.toUpperCase()}: ${value}`, xPos, yPos);
       });
       
-      yPosition += Math.ceil(gasEntries.length / cols) * 5 + 5;
-      doc.setFontSize(10);
+      yPosition += Math.ceil(gasEntries.length / cols) * 4 + 4;
+      doc.setFontSize(8);
     }
 
-    // Images with actual embedding
+    // Optimized image section
     if (data.includeImages && triangle.images.length > 0) {
-      checkPageBreak(60);
+      checkPageBreak(80);
       doc.setFont('helvetica', 'bold');
-      doc.text(`Attached Images (${triangle.images.length}):`, margin + 5, yPosition);
+      doc.setFontSize(10);
+      doc.text(`Attached Images (${triangle.images.length}):`, margin + 3, yPosition);
       yPosition += 8;
       
       for (let i = 0; i < triangle.images.length; i++) {
         const image = triangle.images[i];
         
         try {
-          checkPageBreak(50);
-          
-          // Try to embed the actual image
           const { dataUrl, width, height } = await getImageBase64(image.imageUrl);
           
-          doc.addImage(dataUrl, 'JPEG', margin + 10, yPosition, width, height);
+          // More efficient size calculation
+          const maxPDFWidth = contentWidth - 10;
+          const maxPDFHeight = 180; // Slightly reduced
           
-          // Add image caption
-          doc.setFont('helvetica', 'normal');
+          let finalWidth = width;
+          let finalHeight = height;
+          
+          if (width > maxPDFWidth || height > maxPDFHeight) {
+            const scaleRatio = Math.min(maxPDFWidth / width, maxPDFHeight / height);
+            finalWidth = width * scaleRatio;
+            finalHeight = height * scaleRatio;
+          }
+          
+          const requiredSpace = finalHeight + 35; // Reduced caption space
+          checkPageBreak(requiredSpace);
+          
+          // Center image
+          const imageX = margin + (contentWidth - finalWidth) / 2;
+          
+          // Minimal border
+          doc.setDrawColor(180, 180, 180);
+          doc.setLineWidth(0.3);
+          doc.rect(imageX - 1, yPosition - 1, finalWidth + 2, finalHeight + 2);
+          
+          doc.addImage(dataUrl, 'JPEG', imageX, yPosition, finalWidth, finalHeight);
+          
+          // Compact caption
+          const captionY = yPosition + finalHeight + 5;
+          doc.setFont('helvetica', 'bold');
           doc.setFontSize(8);
-          doc.text(`Image ${i + 1} (${image.source})`, margin + 10, yPosition + height + 5);
-          doc.text(`Uploaded: ${image.uploadedAt.toLocaleDateString('id-ID')}`, margin + 10, yPosition + height + 10);
+          doc.text(`Image ${i + 1}`, imageX, captionY);
           
-          yPosition += height + 15;
+          // Show scaling info more compactly
+          if (finalWidth !== width || finalHeight !== height) {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(6);
+            doc.text(`(${Math.round(width)}×${Math.round(height)}→${Math.round(finalWidth)}×${Math.round(finalHeight)})`, 
+                     imageX + 25, captionY);
+          }
+          
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(7);
+          const sourceY = captionY + 3;
+          doc.text(`${image.source === 'clipboard' ? 'Screenshot' : 'File'} • ${image.filename || 'N/A'}`, imageX, sourceY);
+          doc.text(`${image.uploadedAt instanceof Date 
+            ? image.uploadedAt.toLocaleDateString('id-ID') 
+            : new Date(image.uploadedAt).toLocaleDateString('id-ID')
+          }`, imageX, sourceY + 3);
+          
+          // Thin separator
+          doc.setDrawColor(220, 220, 220);
+          doc.setLineWidth(0.2);
+          doc.line(margin + 5, sourceY + 7, pageWidth - margin - 5, sourceY + 7);
+          
+          yPosition = sourceY + 12;
           
         } catch (error) {
-          // Fallback if image cannot be embedded
+          // Compact error display
+          checkPageBreak(25);
+          
+          doc.setFillColor(255, 248, 248);
+          doc.rect(margin + 3, yPosition - 1, contentWidth - 6, 20, 'F');
+          
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(8);
+          doc.setTextColor(180, 60, 60);
+          doc.text(`⚠ Image ${i + 1} Error`, margin + 6, yPosition + 3);
+          
           doc.setFont('helvetica', 'normal');
-          doc.setFontSize(9);
-          doc.text(`• Image ${i + 1} (${image.source}) - ${image.filename}`, margin + 10, yPosition);
-          doc.text(`  Uploaded: ${image.uploadedAt.toLocaleDateString('id-ID')}`, margin + 15, yPosition + 4);
-          yPosition += 10;
+          doc.setFontSize(6);
+          doc.setTextColor(0, 0, 0);
+          doc.text(`${image.source} • ${image.filename || 'N/A'}`, margin + 8, yPosition + 7);
+          doc.text(`${image.uploadedAt instanceof Date 
+            ? image.uploadedAt.toLocaleDateString('id-ID') 
+            : new Date(image.uploadedAt).toLocaleDateString('id-ID')
+          }`, margin + 8, yPosition + 10);
+          
+          yPosition += 22;
         }
       }
       
       yPosition += 5;
     }
 
-    yPosition += 10;
+    yPosition += 6; // Reduced spacing between triangles
   }
 
-  // Overall Recommendations with better formatting
+  // Compact Recommendations section
   if (data.includeRecommendations && data.overallResult?.recommendations) {
-    checkPageBreak(40);
+    checkPageBreak(30);
 
-    doc.setFontSize(16);
+    doc.setFontSize(12); // Reduced from 16
     doc.setFont('helvetica', 'bold');
     doc.text('Maintenance Recommendations', margin, yPosition);
-    yPosition += 15;
+    yPosition += 10; // Reduced from 15
 
     data.overallResult.recommendations.forEach((rec: FaultRecommendationConfig, index: number) => {
-      checkPageBreak(30);
+      checkPageBreak(25); // Reduced space requirement
 
-      // Recommendation header with numbering
-      doc.setFillColor(255, 248, 240); // Light orange background
-      doc.rect(margin, yPosition - 3, contentWidth, 8, 'F');
-      doc.setFontSize(11);
+      // Compact recommendation header
+      doc.setFillColor(252, 248, 240); // Very light orange
+      doc.rect(margin, yPosition - 2, contentWidth, 6, 'F'); // Reduced height
+      doc.setFontSize(9); // Reduced from 11
       doc.setFont('helvetica', 'bold');
-      doc.text(`${index + 1}. ${rec.description}`, margin + 3, yPosition + 2);
-      yPosition += 10;
+      doc.text(`${index + 1}. ${rec.description}`, margin + 2, yPosition + 1.5);
+      yPosition += 7; // Reduced from 10
 
-      // Recommendation actions
-      doc.setFontSize(9);
+      // Compact recommendation actions
+      doc.setFontSize(7); // Reduced from 9
       doc.setFont('helvetica', 'normal');
       rec.actions.forEach((action: string) => {
-        checkPageBreak(8);
-        const lines = doc.splitTextToSize(`• ${action}`, contentWidth - 12);
-        doc.text(lines, margin + 8, yPosition);
-        yPosition += lines.length * 4 + 1;
+        checkPageBreak(6);
+        const lines = doc.splitTextToSize(`• ${action}`, contentWidth - 8);
+        doc.text(lines, margin + 4, yPosition); // Reduced margin
+        yPosition += lines.length * 3 + 1; // Reduced line spacing
       });
-      yPosition += 5;
+      yPosition += 3; // Reduced spacing between recommendations
     });
   }
 
-  // Footer with enhanced styling
+  // Compact Footer
   const pageCount = doc.getNumberOfPages();
   for (let i = 1; i <= pageCount; i++) {
     doc.setPage(i);
     
-    // Footer line
-    doc.setLineWidth(0.2);
-    doc.line(margin, pageHeight - 18, pageWidth - margin, pageHeight - 18);
+    // Thinner footer line
+    doc.setLineWidth(0.1);
+    doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15); // Moved up
     
-    doc.setFontSize(7);
+    doc.setFontSize(6); // Reduced from 7
     doc.setFont('helvetica', 'normal');
-    const footerText = `DGA Analysis Report - Generated on ${new Date().toLocaleDateString('id-ID')} at ${new Date().toLocaleTimeString('id-ID')}`;
-    doc.text(footerText, margin, pageHeight - 10);
+    const footerText = `DGA Analysis Report - Generated ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'})}`;
+    doc.text(footerText, margin, pageHeight - 8); // Moved up
     
-    // Page number
-    doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+    // Compact page number
+    doc.text(`${i}/${pageCount}`, pageWidth - margin, pageHeight - 8, { align: 'right' }); // Simplified format
   }
 
-  // Download the PDF with enhanced filename
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const filename = `DGA_Analysis_${data.reportHeader.idTrafo || 'Report'}_${timestamp}.pdf`;
+  // Optimized filename
+  const timestamp = new Date().toISOString().slice(0, 16).replace(/[:-]/g, ''); // Shorter timestamp
+  const filename = `DGA_${data.reportHeader.idTrafo || 'Report'}_${timestamp}.pdf`;
   doc.save(filename);
 };
