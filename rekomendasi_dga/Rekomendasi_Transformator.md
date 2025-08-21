@@ -10,11 +10,11 @@ Resamplinng secara berkala untuk monitoring perkembagan gas yang terlarut dalam 
 
 Note :  
 
-• CO ( Karbon Dioksida) LOW resampling berkala dalam rentang waktu 4-8 bulan. 
+• CO ( Karbon Monoxide) LOW (<500) resampling berkala dalam rentang waktu 4-8 bulan. 
 
-• CO ( Karbon Dioksida) MADIUM resampling berkala dalam rentang waktu 2-4 bulan. 
+• CO ( Karbon Monoxide) MEDIUM (500 - 600) resampling berkala dalam rentang waktu 2-4 bulan. 
 
-• CO (Karbon Dioksida) HIGH resampling berkala dalam rentang waktu 2-4 bulan. 
+• CO (Karbon Monoxide) HIGH (>600) resampling berkala dalam rentang waktu 2-4 bulan. 
 
 &nbsp;
 

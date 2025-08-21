@@ -51,6 +51,28 @@ A modern, responsive web application designed for electrical engineers to perfor
 - **Glassmorphism Effects** - Modern design aesthetic
 - **Professional Color Scheme** - Consistent across all components
 
+## 📸 Screenshots
+
+### 🏠 **Dashboard Overview**
+![Dashboard](https://ibb.co.com/Q7kg18hQ)
+*Real-time analytics dashboard showing total analyses, completion rates, monthly trends, and fault distribution statistics with modern glassmorphism design*
+
+### 🔬 **DGA Analysis Interface**
+![Analysis Interface](https://ibb.co.com/23Mf84qJ)
+*Main analysis interface featuring triangle method selection, gas concentration inputs, image upload capabilities, and real-time fault detection*
+
+### 📊 **Multi-Triangle Analysis**
+![Multi-Triangle Analysis](https://ibb.co.com/3mf81QHq)
+*Comprehensive multi-triangle analysis view showing Triangle 1, 4, and 5 methods with integrated results and maintenance recommendations*
+
+### 📄 **PDF Export & Reports**
+![PDF Export](https://ibb.co.com/ynC0mv4h)
+*Professional PDF export interface with customizable transformer information, selective triangle inclusion, and content options for generating comprehensive reports*
+
+### 💾 **Analysis History Management**
+![History Management](https://ibb.co.com/bMZYmfYy)
+*Analysis history dashboard with filtering, sorting capabilities, export tracking, and the ability to load previous work for review or continuation*
+
 ## 🚀 Quick Start
 
 ### Prerequisites
