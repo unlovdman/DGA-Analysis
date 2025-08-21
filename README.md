@@ -53,25 +53,25 @@ A modern, responsive web application designed for electrical engineers to perfor
 
 ## 📸 Screenshots
 
-### 🏠 **Dashboard Overview**
-![Dashboard](https://i.ibb.co/Q7kg18hQ/image.png)
-*Real-time analytics dashboard showing total analyses, completion rates, monthly trends, and fault distribution statistics with modern glassmorphism design*
-
 ### 🔬 **DGA Analysis Interface**
-![Analysis Interface](https://i.ibb.co/23Mf84qJ/image.png)
-*Main analysis interface featuring triangle method selection, gas concentration inputs, image upload capabilities, and real-time fault detection*
+![Analysis Interface](https://github.com/user-attachments/assets/47488ae0-4d47-4420-8e58-2692927cfb64)
+*Main DGA analysis interface with triangle selection, gas concentration inputs, fault type selection, and triangle visualization for comprehensive transformer analysis*
 
-### 📊 **Multi-Triangle Analysis**
-![Multi-Triangle Analysis](https://i.ibb.co/3mf81QHq/image.png)
-*Comprehensive multi-triangle analysis view showing Triangle 1, 4, and 5 methods with integrated results and maintenance recommendations*
+### 🏠 **Dashboard Overview**
+![Dashboard](https://github.com/user-attachments/assets/ee4f9c21-a302-45cc-bb6f-158c28504a77)
+*Real-time analytics dashboard displaying total analyses, completion rates, monthly trends, fault distribution statistics, and recent analysis history with modern UI design*
 
-### 📄 **PDF Export & Reports**
-![PDF Export](https://i.ibb.co/ynC0mv4h/image.png)
-*Professional PDF export interface with customizable transformer information, selective triangle inclusion, and content options for generating comprehensive reports*
+### 📊 **Multi-Triangle Analysis Results**
+![Multi-Triangle Analysis](https://github.com/user-attachments/assets/d23b73ba-5de8-4097-aa76-98fa342e82d7)
+*Comprehensive analysis results showing Triangle 1, 4, and 5 methods with fault detection outcomes, severity assessment, and integrated maintenance recommendations*
 
-### 💾 **Analysis History Management**
-![History Management](https://i.ibb.co/bMZYmfYy/image.png)
-*Analysis history dashboard with filtering, sorting capabilities, export tracking, and the ability to load previous work for review or continuation*
+### 📄 **PDF Export Configuration**
+![PDF Export](https://github.com/user-attachments/assets/af28a3f8-8bc8-4b09-9373-137f03670394)
+*PDF export modal with transformer information form, triangle selection options, content customization settings, and professional report generation capabilities*
+
+### 💾 **Analysis History & Data Management**
+![History Management](https://github.com/user-attachments/assets/b0e02f3d-a5e4-4fc9-8a61-e53af0d62d38)
+*Analysis history dashboard with chronological data display, filtering options, export status tracking, and load previous analysis functionality for data continuity*
 
 ## 🚀 Quick Start
 
