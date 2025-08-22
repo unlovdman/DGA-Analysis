@@ -40,6 +40,7 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ onStartAnalysis, onViewHistory }) => {
   const { isDark } = useTheme();
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalAnalyses: 0,
     completedAnalyses: 0,
@@ -67,8 +68,12 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartAnalysis, onViewHistory })
     // or navigate to the analysis page with pre-loaded data
   };
 
-  const loadDashboardData = () => {
+  const loadDashboardData = async () => {
+    setIsRefreshing(true);
     try {
+      // Force refresh by clearing cache if needed
+      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for UI feedback
+      
       const saved = localStorage.getItem('dgaAnalysisHistory');
       if (saved) {
         const historyData: AnalysisHistory[] = JSON.parse(saved).map((item: any) => ({
@@ -162,6 +167,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartAnalysis, onViewHistory })
       }
     } catch (error) {
       console.error('Error loading dashboard data:', error);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -240,16 +247,27 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartAnalysis, onViewHistory })
               </p>
             </div>
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: isRefreshing ? 1 : 1.05 }}
+              whileTap={{ scale: isRefreshing ? 1 : 0.95 }}
               onClick={loadDashboardData}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              disabled={isRefreshing}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
                 isDark
-                  ? 'bg-primary-600 hover:bg-primary-700 text-white'
-                  : 'bg-primary-blue hover:bg-primary-700 text-white'
+                  ? 'bg-primary-600 hover:bg-primary-700 text-white disabled:bg-primary-800 disabled:cursor-not-allowed'
+                  : 'bg-primary-blue hover:bg-primary-700 text-white disabled:bg-blue-400 disabled:cursor-not-allowed'
               }`}
             >
-              Refresh Data
+              {isRefreshing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Refreshing...</span>
+                </>
+              ) : (
+                <>
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Refresh Data</span>
+                </>
+              )}
             </motion.button>
           </div>
         </motion.div>

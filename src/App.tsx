@@ -58,6 +58,7 @@ function App() {
                 }}
                 currentPage="dashboard"
                 onBackToHome={handleBackToLanding}
+                analysisType={analysisType}
               />
               <BreakdownVoltageDashboard 
                 onStartAnalysis={handleStartNewAnalysis}
@@ -76,6 +77,7 @@ function App() {
                 }}
                 currentPage="dashboard"
                 onBackToHome={handleBackToLanding}
+                analysisType={analysisType || 'dga'}
               />
               <Dashboard 
                 onStartAnalysis={() => handleSelectAnalysis('dga')}
@@ -96,6 +98,7 @@ function App() {
                 }}
                 currentPage="analysis"
                 onBackToHome={handleBackToLanding}
+                analysisType={analysisType}
               />
               <DuvalAnalysis onBack={handleBackToLanding} />
             </div>
@@ -110,6 +113,7 @@ function App() {
                 }}
                 currentPage="analysis"
                 onBackToHome={handleBackToLanding}
+                analysisType={analysisType}
               />
               <BreakdownVoltageAnalysis onBack={handleBackToLanding} />
             </div>

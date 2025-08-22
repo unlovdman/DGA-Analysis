@@ -37,6 +37,7 @@ interface BreakdownVoltageDashboardProps {
 const BreakdownVoltageDashboard: React.FC<BreakdownVoltageDashboardProps> = ({ onStartAnalysis, onViewHistory }) => {
   const { isDark } = useTheme();
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [stats, setStats] = useState<BreakdownVoltageDashboardStats>({
     totalAnalyses: 0,
     goodResults: 0,
@@ -61,8 +62,12 @@ const BreakdownVoltageDashboard: React.FC<BreakdownVoltageDashboardProps> = ({ o
     // or navigate to the analysis page with pre-loaded data
   };
 
-  const loadDashboardData = () => {
+  const loadDashboardData = async () => {
+    setIsRefreshing(true);
     try {
+      // Force refresh by clearing cache if needed
+      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for UI feedback
+      
       const saved = localStorage.getItem('breakdownVoltageHistory');
       if (saved) {
         const historyData: BreakdownVoltageHistoryType[] = JSON.parse(saved).map((item: any) => ({
@@ -141,6 +146,8 @@ const BreakdownVoltageDashboard: React.FC<BreakdownVoltageDashboardProps> = ({ o
       }
     } catch (error) {
       console.error('Error loading breakdown voltage dashboard data:', error);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -218,16 +225,27 @@ const BreakdownVoltageDashboard: React.FC<BreakdownVoltageDashboardProps> = ({ o
               </p>
             </div>
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: isRefreshing ? 1 : 1.05 }}
+              whileTap={{ scale: isRefreshing ? 1 : 0.95 }}
               onClick={loadDashboardData}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              disabled={isRefreshing}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
                 isDark
-                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
-                  : 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white disabled:bg-yellow-800 disabled:cursor-not-allowed'
+                  : 'bg-yellow-600 hover:bg-yellow-700 text-white disabled:bg-yellow-400 disabled:cursor-not-allowed'
               }`}
             >
-              Refresh Data
+              {isRefreshing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Refreshing...</span>
+                </>
+              ) : (
+                <>
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Refresh Data</span>
+                </>
+              )}
             </motion.button>
           </div>
         </motion.div>

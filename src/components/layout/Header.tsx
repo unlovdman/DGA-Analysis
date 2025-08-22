@@ -9,7 +9,8 @@ import {
   Close,
   LightMode,
   DarkMode,
-  Home
+  Home,
+  ElectricBolt
 } from '@mui/icons-material';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -17,11 +18,34 @@ interface HeaderProps {
   onNavigate: (page: string) => void;
   currentPage: string;
   onBackToHome?: () => void;
+  analysisType?: 'dga' | 'breakdown' | null;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome }) => {
+const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome, analysisType }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, toggleTheme, isDark } = useTheme();
+
+  // Dynamic title and subtitle based on analysis type
+  const getHeaderInfo = () => {
+    if (analysisType === 'breakdown') {
+      return {
+        title: "Breakdown Voltage",
+        subtitle: "Voltage Breakdown Analysis"
+      };
+    } else if (analysisType === 'dga') {
+      return {
+        title: "DGA Analysis",
+        subtitle: "Dissolved Gas Analysis"
+      };
+    } else {
+      return {
+        title: "Transformer Analysis",
+        subtitle: "Professional Platform"
+      };
+    }
+  };
+
+  const headerInfo = getHeaderInfo();
 
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Dashboard },
@@ -47,20 +71,26 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome }
             className="flex items-center space-x-3"
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-              isDark ? 'bg-primary-600' : 'bg-primary-blue'
+              analysisType === 'breakdown' 
+                ? isDark ? 'bg-yellow-600' : 'bg-yellow-500'
+                : isDark ? 'bg-primary-600' : 'bg-primary-blue'
             } text-white`}>
-              <Analytics className="w-6 h-6" />
+              {analysisType === 'breakdown' ? (
+                <ElectricBolt className="w-6 h-6" />
+              ) : (
+                <Analytics className="w-6 h-6" />
+              )}
             </div>
             <div>
               <h1 className={`text-xl font-bold ${
                 isDark ? 'text-dark-text' : 'text-gray-900'
               }`}>
-                DGA Analysis
+                {headerInfo.title}
               </h1>
               <p className={`text-xs ${
                 isDark ? 'text-dark-muted' : 'text-gray-500'
               }`}>
-                Dissolved Gas Analysis
+                {headerInfo.subtitle}
               </p>
             </div>
           </motion.div>
@@ -79,9 +109,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome }
                   onClick={() => onNavigate(item.id)}
                   className={`relative px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 ${
                     isActive
-                      ? isDark
-                        ? 'bg-primary-600 text-white shadow-lg'
-                        : 'bg-primary-blue text-white shadow-lg'
+                      ? analysisType === 'breakdown'
+                        ? isDark ? 'bg-yellow-600 text-white shadow-lg' : 'bg-yellow-500 text-white shadow-lg'
+                        : isDark ? 'bg-primary-600 text-white shadow-lg' : 'bg-primary-blue text-white shadow-lg'
                       : isDark
                         ? 'text-dark-text hover:bg-dark-card'
                         : 'text-gray-600 hover:bg-gray-100'
@@ -94,7 +124,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome }
                     <motion.div
                       layoutId="activeTab"
                       className={`absolute inset-0 rounded-lg ${
-                        isDark ? 'bg-primary-600' : 'bg-primary-blue'
+                        analysisType === 'breakdown'
+                          ? isDark ? 'bg-yellow-600' : 'bg-yellow-500'
+                          : isDark ? 'bg-primary-600' : 'bg-primary-blue'
                       }`}
                       style={{ zIndex: -1 }}
                     />
@@ -191,9 +223,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome }
                     }}
                     className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                       isActive
-                        ? isDark
-                          ? 'bg-primary-600 text-white'
-                          : 'bg-primary-blue text-white'
+                        ? analysisType === 'breakdown'
+                          ? isDark ? 'bg-yellow-600 text-white' : 'bg-yellow-500 text-white'
+                          : isDark ? 'bg-primary-600 text-white' : 'bg-primary-blue text-white'
                         : isDark
                           ? 'text-dark-text hover:bg-dark-card'
                           : 'text-gray-600 hover:bg-gray-100'

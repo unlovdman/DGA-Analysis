@@ -15,22 +15,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectAnalysis }) => {
       isDark 
         ? 'bg-gradient-to-br from-dark-bg via-dark-surface to-dark-card' 
         : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'
-    } flex items-center justify-center p-6 py-20`}>
+    } flex items-center justify-center px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16`}>
       <div className="max-w-6xl mx-auto w-full">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-12 lg:mb-16"
         >
-          <h1 className={`text-6xl font-bold mb-6 bg-gradient-to-r ${
+          <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-gradient-to-r ${
             isDark 
               ? 'from-blue-400 to-purple-400' 
               : 'from-primary-blue to-primary-accent'
           } bg-clip-text text-transparent`}>
             HALLO TRAFO
           </h1>
-          <p className={`text-xl max-w-3xl mx-auto leading-relaxed ${
+          <p className={`text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed ${
             isDark ? 'text-dark-muted' : 'text-gray-600'
           }`}>
             Professional Transformer Analysis Platform - Choose your analysis method
@@ -38,7 +38,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectAnalysis }) => {
         </motion.div>
 
         {/* Analysis Type Cards */}
-        <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto mb-20">
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-5xl mx-auto mb-12 sm:mb-16 lg:mb-20">
           {/* Breakdown Voltage Card */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -48,7 +48,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectAnalysis }) => {
             className="group cursor-pointer"
             onClick={() => onSelectAnalysis('breakdown')}
           >
-            <div className={`relative overflow-hidden rounded-3xl p-10 h-[480px] border-2 transition-all duration-500 ${
+            <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 lg:p-10 h-[400px] sm:h-[440px] lg:h-[480px] border-2 transition-all duration-500 ${
               isDark 
                 ? 'bg-gradient-to-br from-yellow-900/20 to-orange-900/20 border-yellow-700/30 hover:border-yellow-500/50 hover:shadow-yellow-500/20' 
                 : 'bg-gradient-to-br from-yellow-50 to-orange-100 border-yellow-200 hover:border-yellow-400 hover:shadow-yellow-400/20'
@@ -117,7 +117,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectAnalysis }) => {
             className="group cursor-pointer"
             onClick={() => onSelectAnalysis('dga')}
           >
-            <div className={`relative overflow-hidden rounded-3xl p-10 h-[480px] border-2 transition-all duration-500 ${
+            <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 lg:p-10 h-[400px] sm:h-[440px] lg:h-[480px] border-2 transition-all duration-500 ${
               isDark 
                 ? 'bg-gradient-to-br from-blue-900/20 to-indigo-900/20 border-blue-700/30 hover:border-blue-500/50 hover:shadow-blue-500/20' 
                 : 'bg-gradient-to-br from-blue-50 to-indigo-100 border-blue-200 hover:border-blue-400 hover:shadow-blue-400/20'
@@ -183,13 +183,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectAnalysis }) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className={`text-center p-8 rounded-2xl border max-w-4xl mx-auto ${
+          className={`text-center p-6 sm:p-8 rounded-2xl border max-w-4xl mx-auto ${
             isDark 
               ? 'bg-dark-card border-dark-border text-dark-muted' 
               : 'bg-white/50 border-gray-200 text-gray-600'
           }`}
         >
-          <p className="text-lg leading-relaxed">
+          <p className="text-base sm:text-lg leading-relaxed">
             Professional transformer analysis platform compliant with international standards.<br />
             Choose the appropriate analysis method for your transformer testing requirements.
           </p>
