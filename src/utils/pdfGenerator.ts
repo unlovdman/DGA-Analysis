@@ -366,19 +366,22 @@ export const generateDGAPDF = async (data: PDFGenerationData): Promise<void> => 
       // Compact recommendation header
       doc.setFillColor(252, 248, 240); // Very light orange
       doc.rect(margin, yPosition - 2, contentWidth, 6, 'F'); // Reduced height
-      doc.setFontSize(9); // Reduced from 11
+      doc.setFontSize(10); // Increased from 9
       doc.setFont('helvetica', 'bold');
       doc.text(`${index + 1}. ${rec.description}`, margin + 2, yPosition + 1.5);
       yPosition += 7; // Reduced from 10
 
       // Compact recommendation actions
-      doc.setFontSize(7); // Reduced from 9
+      doc.setFontSize(8); // Increased from 7
       doc.setFont('helvetica', 'normal');
       rec.actions.forEach((action: string) => {
         checkPageBreak(6);
         const lines = doc.splitTextToSize(`• ${action}`, contentWidth - 8);
-        doc.text(lines, margin + 4, yPosition); // Reduced margin
-        yPosition += lines.length * 3 + 1; // Reduced line spacing
+        lines.forEach((line: string) => {
+          doc.text(line, margin + 4, yPosition, { align: 'justify', maxWidth: contentWidth - 8 }); // Added justify alignment
+          yPosition += 4; // Increased line spacing from 3
+        });
+        yPosition += 1; // Reduced spacing between recommendations
       });
       yPosition += 3; // Reduced spacing between recommendations
     });
@@ -555,7 +558,7 @@ export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData)
   const resultLines = doc.splitTextToSize(resultText, contentWidth);
   resultLines.forEach((line: string) => {
     checkPageBreak(5);
-    doc.text(line, margin, yPosition);
+    doc.text(line, margin, yPosition, { align: 'justify', maxWidth: contentWidth });
     yPosition += 4.5; // Reduced line spacing
   });
 
@@ -580,7 +583,7 @@ export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData)
     checkPageBreak(6);
     const standardLines = doc.splitTextToSize(standard, contentWidth - 5);
     standardLines.forEach((line: string) => {
-      doc.text(line, margin, yPosition);
+      doc.text(line, margin, yPosition, { align: 'justify', maxWidth: contentWidth - 5 });
       yPosition += 4; // Reduced spacing
     });
     yPosition += 2;
@@ -769,7 +772,7 @@ export const generateBulkBreakdownVoltagePDF = async (historyItems: any[]): Prom
     const resultLines = doc.splitTextToSize(resultText, contentWidth);
     resultLines.forEach((line: string) => {
       checkPageBreak(5);
-      doc.text(line, margin, yPosition);
+      doc.text(line, margin, yPosition, { align: 'justify', maxWidth: contentWidth });
       yPosition += 4.5;
     });
 
@@ -794,7 +797,7 @@ export const generateBulkBreakdownVoltagePDF = async (historyItems: any[]): Prom
       checkPageBreak(6);
       const standardLines = doc.splitTextToSize(standard, contentWidth - 5);
       standardLines.forEach((line: string) => {
-        doc.text(line, margin, yPosition);
+        doc.text(line, margin, yPosition, { align: 'justify', maxWidth: contentWidth - 5 });
         yPosition += 4;
       });
       yPosition += 2;
