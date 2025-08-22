@@ -8,16 +8,18 @@ import {
   Menu, 
   Close,
   LightMode,
-  DarkMode
+  DarkMode,
+  Home
 } from '@mui/icons-material';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface HeaderProps {
   onNavigate: (page: string) => void;
   currentPage: string;
+  onBackToHome?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
+const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, toggleTheme, isDark } = useTheme();
 
@@ -106,6 +108,24 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage }) => {
 
           {/* Right side controls */}
           <div className="flex items-center space-x-3">
+            {/* Back to Home Button */}
+            {onBackToHome && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onBackToHome}
+                className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                  isDark
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
+                    : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600'
+                } shadow-lg hover:shadow-xl`}
+                title="Back to Home"
+              >
+                <Home className="w-4 h-4 mr-2" />
+                Home
+              </motion.button>
+            )}
+
             {/* Dark Mode Toggle */}
             <motion.button
               whileHover={{ scale: 1.1 }}

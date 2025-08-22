@@ -1,49 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
+  ElectricBolt,
   Assessment,
   TrendingUp,
   Warning,
   CheckCircle,
+  Error as ErrorIcon,
   Timeline,
   Analytics,
   History,
   GetApp,
   DateRange,
-  Science,
-  Error as ErrorIcon,
-  Lightbulb
+  Lightbulb,
+  BarChart
 } from '@mui/icons-material';
 import { useTheme } from '../../contexts/ThemeContext';
-import type { AnalysisHistory, ManualTriangleData } from '../../types';
+import type { BreakdownVoltageHistory, BreakdownVoltageData } from '../../types';
 
-interface DashboardStats {
+interface BreakdownVoltageDashboardStats {
   totalAnalyses: number;
-  completedAnalyses: number;
-  exportedAnalyses: number;
-  criticalFaults: number;
-  highFaults: number;
-  mediumFaults: number;
-  lowFaults: number;
-  recentAnalyses: AnalysisHistory[];
-  triangleDistribution: { triangle1: number; triangle4: number; triangle5: number };
-  faultDistribution: Record<string, number>;
+  goodResults: number;
+  fairResults: number;
+  poorResults: number;
+  recentAnalyses: BreakdownVoltageHistory[];
+  transformerTypeDistribution: { O: number; A: number; B: number; C: number };
+  averageVoltageByType: { O: number; A: number; B: number; C: number };
   monthlyTrend: { month: string; count: number }[];
 }
 
-const Dashboard: React.FC = () => {
+const BreakdownVoltageDashboard: React.FC = () => {
   const { isDark } = useTheme();
-  const [stats, setStats] = useState<DashboardStats>({
+  const [stats, setStats] = useState<BreakdownVoltageDashboardStats>({
     totalAnalyses: 0,
-    completedAnalyses: 0,
-    exportedAnalyses: 0,
-    criticalFaults: 0,
-    highFaults: 0,
-    mediumFaults: 0,
-    lowFaults: 0,
+    goodResults: 0,
+    fairResults: 0,
+    poorResults: 0,
     recentAnalyses: [],
-    triangleDistribution: { triangle1: 0, triangle4: 0, triangle5: 0 },
-    faultDistribution: {},
+    transformerTypeDistribution: { O: 0, A: 0, B: 0, C: 0 },
+    averageVoltageByType: { O: 0, A: 0, B: 0, C: 0 },
     monthlyTrend: []
   });
 
@@ -53,9 +48,9 @@ const Dashboard: React.FC = () => {
 
   const loadDashboardData = () => {
     try {
-      const saved = localStorage.getItem('dgaAnalysisHistory');
+      const saved = localStorage.getItem('breakdownVoltageHistory');
       if (saved) {
-        const historyData: AnalysisHistory[] = JSON.parse(saved).map((item: any) => ({
+        const historyData: BreakdownVoltageHistory[] = JSON.parse(saved).map((item: any) => ({
           ...item,
           createdAt: new Date(item.createdAt),
           exportedAt: item.exportedAt ? new Date(item.exportedAt) : undefined
@@ -63,51 +58,39 @@ const Dashboard: React.FC = () => {
 
         // Calculate statistics
         const totalAnalyses = historyData.length;
-        const completedAnalyses = historyData.filter(h => 
-          h.triangles.some(t => t.isCompleted)
-        ).length;
-        const exportedAnalyses = historyData.filter(h => h.exportedAt).length;
-
-        // Fault severity analysis
-        let criticalFaults = 0;
-        let highFaults = 0;
-        let mediumFaults = 0;
-        let lowFaults = 0;
-
-        // Triangle distribution
-        const triangleDistribution = { triangle1: 0, triangle4: 0, triangle5: 0 };
         
-        // Fault distribution
-        const faultDistribution: Record<string, number> = {};
+        // Result distribution
+        let goodResults = 0;
+        let fairResults = 0;
+        let poorResults = 0;
+
+        // Transformer type distribution
+        const transformerTypeDistribution = { O: 0, A: 0, B: 0, C: 0 };
+        const voltageByType = { O: [], A: [], B: [], C: [] } as Record<string, number[]>;
 
         historyData.forEach(history => {
-          history.triangles.forEach(triangle => {
-            // Count triangle methods
-            if (triangle.triangleMethod === 1) triangleDistribution.triangle1++;
-            if (triangle.triangleMethod === 4) triangleDistribution.triangle4++;
-            if (triangle.triangleMethod === 5) triangleDistribution.triangle5++;
+          const data = history.breakdownData;
+          
+          // Count results
+          if (data.result === 'good') goodResults++;
+          else if (data.result === 'fair') fairResults++;
+          else if (data.result === 'poor') poorResults++;
 
-            // Count fault types and severity
-            if (triangle.isCompleted) {
-              if (triangle.dataClassification === 'Data 1' && triangle.coAnalysisResult) {
-                const severity = triangle.coAnalysisResult.severity;
-                if (severity === 'HIGH') criticalFaults++;
-                else if (severity === 'MEDIUM') mediumFaults++;
-                else lowFaults++;
-                
-                faultDistribution[`CO-${severity}`] = (faultDistribution[`CO-${severity}`] || 0) + 1;
-              } else if (triangle.selectedFault) {
-                const fault = triangle.selectedFault;
-                faultDistribution[fault] = (faultDistribution[fault] || 0) + 1;
+          // Count transformer types and collect voltage data
+          if (data.transformerType) {
+            transformerTypeDistribution[data.transformerType]++;
+            voltageByType[data.transformerType].push(data.average);
+          }
+        });
 
-                // Categorize fault severity
-                if (['D2', 'T3'].includes(fault)) criticalFaults++;
-                else if (['D1', 'DT', 'T2'].includes(fault)) highFaults++;
-                else if (['T1', 'C', 'PD'].includes(fault)) mediumFaults++;
-                else lowFaults++;
-              }
-            }
-          });
+        // Calculate average voltage by transformer type
+        const averageVoltageByType = { O: 0, A: 0, B: 0, C: 0 };
+        Object.keys(voltageByType).forEach(type => {
+          const voltages = voltageByType[type as keyof typeof voltageByType];
+          if (voltages.length > 0) {
+            averageVoltageByType[type as keyof typeof averageVoltageByType] = 
+              Math.round((voltages.reduce((sum, v) => sum + v, 0) / voltages.length) * 100) / 100;
+          }
         });
 
         // Monthly trend (last 6 months)
@@ -132,36 +115,32 @@ const Dashboard: React.FC = () => {
 
         setStats({
           totalAnalyses,
-          completedAnalyses,
-          exportedAnalyses,
-          criticalFaults,
-          highFaults,
-          mediumFaults,
-          lowFaults,
+          goodResults,
+          fairResults,
+          poorResults,
           recentAnalyses,
-          triangleDistribution,
-          faultDistribution,
+          transformerTypeDistribution,
+          averageVoltageByType,
           monthlyTrend
         });
       }
     } catch (error) {
-      console.error('Error loading dashboard data:', error);
+      console.error('Error loading breakdown voltage dashboard data:', error);
     }
   };
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'critical': return isDark ? 'text-red-400 bg-red-900/20' : 'text-red-600 bg-red-50';
-      case 'high': return isDark ? 'text-orange-400 bg-orange-900/20' : 'text-orange-600 bg-orange-50';
-      case 'medium': return isDark ? 'text-yellow-400 bg-yellow-900/20' : 'text-yellow-600 bg-yellow-50';
-      case 'low': return isDark ? 'text-green-400 bg-green-900/20' : 'text-green-600 bg-green-50';
+  const getSeverityColor = (result: string) => {
+    switch (result) {
+      case 'poor': return isDark ? 'text-red-400 bg-red-900/20' : 'text-red-600 bg-red-50';
+      case 'fair': return isDark ? 'text-yellow-400 bg-yellow-900/20' : 'text-yellow-600 bg-yellow-50';
+      case 'good': return isDark ? 'text-green-400 bg-green-900/20' : 'text-green-600 bg-green-50';
       default: return isDark ? 'text-gray-400 bg-gray-800' : 'text-gray-600 bg-gray-50';
     }
   };
 
   const StatCard: React.FC<{
     title: string;
-    value: number;
+    value: number | string;
     icon: React.ReactNode;
     color: string;
     trend?: number;
@@ -187,7 +166,7 @@ const Dashboard: React.FC = () => {
       </div>
       <div>
         <h3 className={`text-2xl font-bold ${isDark ? 'text-dark-text' : 'text-gray-900'}`}>
-          {value.toLocaleString()}
+          {typeof value === 'number' ? value.toLocaleString() : value}
         </h3>
         <p className={`text-sm ${isDark ? 'text-dark-muted' : 'text-gray-600'}`}>
           {title}
@@ -205,7 +184,7 @@ const Dashboard: React.FC = () => {
     <div className={`min-h-screen transition-colors duration-300 ${
       isDark 
         ? 'bg-gradient-to-br from-dark-bg via-dark-surface to-dark-card' 
-        : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'
+        : 'bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50'
     } pt-20 p-6`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -217,10 +196,10 @@ const Dashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className={`text-4xl font-bold ${isDark ? 'text-dark-text' : 'text-gray-900'} mb-2`}>
-                DGA Dashboard
+                Breakdown Voltage Dashboard
               </h1>
               <p className={`text-lg ${isDark ? 'text-dark-muted' : 'text-gray-600'}`}>
-                Real-time analysis overview and statistics
+                Voltage breakdown analysis overview and statistics
               </p>
             </div>
             <motion.button
@@ -229,8 +208,8 @@ const Dashboard: React.FC = () => {
               onClick={loadDashboardData}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 isDark
-                  ? 'bg-primary-600 hover:bg-primary-700 text-white'
-                  : 'bg-primary-blue hover:bg-primary-700 text-white'
+                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                  : 'bg-yellow-600 hover:bg-yellow-700 text-white'
               }`}
             >
               Refresh Data
@@ -243,34 +222,34 @@ const Dashboard: React.FC = () => {
           <StatCard
             title="Total Analyses"
             value={stats.totalAnalyses}
-            icon={<Assessment className="w-6 h-6 text-white" />}
-            color={isDark ? 'bg-blue-600' : 'bg-blue-500'}
+            icon={<ElectricBolt className="w-6 h-6 text-white" />}
+            color={isDark ? 'bg-yellow-600' : 'bg-yellow-500'}
             subtitle="All time"
           />
           <StatCard
-            title="Completed"
-            value={stats.completedAnalyses}
+            title="Good Results"
+            value={stats.goodResults}
             icon={<CheckCircle className="w-6 h-6 text-white" />}
             color={isDark ? 'bg-green-600' : 'bg-green-500'}
-            subtitle={`${stats.totalAnalyses > 0 ? Math.round((stats.completedAnalyses / stats.totalAnalyses) * 100) : 0}% completion rate`}
+            subtitle={`${stats.totalAnalyses > 0 ? Math.round((stats.goodResults / stats.totalAnalyses) * 100) : 0}% of total`}
           />
           <StatCard
-            title="Exported Reports"
-            value={stats.exportedAnalyses}
-            icon={<GetApp className="w-6 h-6 text-white" />}
-            color={isDark ? 'bg-purple-600' : 'bg-purple-500'}
-            subtitle="PDF exports"
+            title="Fair Results"
+            value={stats.fairResults}
+            icon={<Warning className="w-6 h-6 text-white" />}
+            color={isDark ? 'bg-yellow-600' : 'bg-yellow-500'}
+            subtitle="Needs monitoring"
           />
           <StatCard
-            title="Critical Faults"
-            value={stats.criticalFaults}
+            title="Poor Results"
+            value={stats.poorResults}
             icon={<ErrorIcon className="w-6 h-6 text-white" />}
             color={isDark ? 'bg-red-600' : 'bg-red-500'}
-            subtitle="Requires immediate action"
+            subtitle="Requires action"
           />
         </div>
 
-        {/* Fault Severity Overview */}
+        {/* Result Distribution */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -282,30 +261,29 @@ const Dashboard: React.FC = () => {
           } shadow-lg`}
         >
           <h3 className={`text-xl font-bold ${isDark ? 'text-dark-text' : 'text-gray-900'} mb-6`}>
-            Fault Severity Distribution
+            Voltage Condition Distribution
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className={`p-4 rounded-xl ${getSeverityColor('critical')}`}>
-              <div className="text-2xl font-bold">{stats.criticalFaults}</div>
-              <div className="text-sm font-medium">Critical</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className={`p-4 rounded-xl ${getSeverityColor('good')}`}>
+              <div className="text-2xl font-bold">{stats.goodResults}</div>
+              <div className="text-sm font-medium">Good Condition</div>
+              <div className="text-xs mt-1">Voltage breakdown adequate</div>
             </div>
-            <div className={`p-4 rounded-xl ${getSeverityColor('high')}`}>
-              <div className="text-2xl font-bold">{stats.highFaults}</div>
-              <div className="text-sm font-medium">High</div>
+            <div className={`p-4 rounded-xl ${getSeverityColor('fair')}`}>
+              <div className="text-2xl font-bold">{stats.fairResults}</div>
+              <div className="text-sm font-medium">Fair Condition</div>
+              <div className="text-xs mt-1">Monitoring required</div>
             </div>
-            <div className={`p-4 rounded-xl ${getSeverityColor('medium')}`}>
-              <div className="text-2xl font-bold">{stats.mediumFaults}</div>
-              <div className="text-sm font-medium">Medium</div>
-            </div>
-            <div className={`p-4 rounded-xl ${getSeverityColor('low')}`}>
-              <div className="text-2xl font-bold">{stats.lowFaults}</div>
-              <div className="text-sm font-medium">Low</div>
+            <div className={`p-4 rounded-xl ${getSeverityColor('poor')}`}>
+              <div className="text-2xl font-bold">{stats.poorResults}</div>
+              <div className="text-sm font-medium">Poor Condition</div>
+              <div className="text-xs mt-1">Immediate action needed</div>
             </div>
           </div>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Triangle Method Distribution */}
+          {/* Transformer Type Distribution */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -317,33 +295,30 @@ const Dashboard: React.FC = () => {
             } shadow-lg`}
           >
             <h3 className={`text-xl font-bold ${isDark ? 'text-dark-text' : 'text-gray-900'} mb-6`}>
-              Triangle Method Usage
+              Transformer Type Analysis
             </h3>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className={`font-medium ${isDark ? 'text-dark-text' : 'text-gray-700'}`}>
-                  Triangle 1 (CH4, C2H4, C2H2)
-                </span>
-                <span className={`font-bold ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-                  {stats.triangleDistribution.triangle1}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className={`font-medium ${isDark ? 'text-dark-text' : 'text-gray-700'}`}>
-                  Triangle 4 (H2, CH4, C2H6)
-                </span>
-                <span className={`font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>
-                  {stats.triangleDistribution.triangle4}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className={`font-medium ${isDark ? 'text-dark-text' : 'text-gray-700'}`}>
-                  Triangle 5 (CH4, C2H4, C2H6)
-                </span>
-                <span className={`font-bold ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
-                  {stats.triangleDistribution.triangle5}
-                </span>
-              </div>
+              {Object.entries(stats.transformerTypeDistribution).map(([type, count]) => (
+                <div key={type} className="flex items-center justify-between">
+                  <div>
+                    <span className={`font-medium ${isDark ? 'text-dark-text' : 'text-gray-700'}`}>
+                      Type {type} ({
+                        type === 'O' ? '> 400KV' :
+                        type === 'A' ? '170-400KV' :
+                        type === 'B' ? '72.5KV' : '< 72.5KV'
+                      })
+                    </span>
+                    <div className={`text-xs ${isDark ? 'text-dark-muted' : 'text-gray-500'}`}>
+                      Avg: {stats.averageVoltageByType[type as keyof typeof stats.averageVoltageByType]} kV
+                    </div>
+                  </div>
+                  <span className={`font-bold text-lg ${
+                    isDark ? 'text-yellow-400' : 'text-yellow-600'
+                  }`}>
+                    {count}
+                  </span>
+                </div>
+              ))}
             </div>
           </motion.div>
 
@@ -370,7 +345,7 @@ const Dashboard: React.FC = () => {
                   <div className="flex items-center space-x-2">
                     <div className={`w-20 h-2 rounded-full ${isDark ? 'bg-dark-border' : 'bg-gray-200'} overflow-hidden`}>
                       <div 
-                        className={`h-full ${isDark ? 'bg-primary-500' : 'bg-primary-blue'} transition-all duration-500`}
+                        className={`h-full ${isDark ? 'bg-yellow-500' : 'bg-yellow-600'} transition-all duration-500`}
                         style={{ 
                           width: `${Math.max(5, (month.count / Math.max(...stats.monthlyTrend.map(m => m.count), 1)) * 100)}%` 
                         }}
@@ -398,17 +373,17 @@ const Dashboard: React.FC = () => {
           } shadow-lg`}
         >
           <h3 className={`text-xl font-bold ${isDark ? 'text-dark-text' : 'text-gray-900'} mb-6`}>
-            Recent Analyses
+            Recent Breakdown Voltage Analyses
           </h3>
           
           {stats.recentAnalyses.length === 0 ? (
             <div className="text-center py-8">
-              <Science className={`w-16 h-16 mx-auto mb-4 ${isDark ? 'text-dark-muted' : 'text-gray-400'}`} />
+              <ElectricBolt className={`w-16 h-16 mx-auto mb-4 ${isDark ? 'text-dark-muted' : 'text-gray-400'}`} />
               <p className={`text-lg ${isDark ? 'text-dark-muted' : 'text-gray-500'}`}>
                 No analyses found
               </p>
               <p className={`text-sm ${isDark ? 'text-dark-muted' : 'text-gray-400'}`}>
-                Start your first DGA analysis to see data here
+                Start your first breakdown voltage analysis to see data here
               </p>
             </div>
           ) : (
@@ -427,34 +402,30 @@ const Dashboard: React.FC = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-lg ${isDark ? 'bg-primary-600' : 'bg-primary-blue'}`}>
-                        <Analytics className="w-5 h-5 text-white" />
+                      <div className={`p-2 rounded-lg ${isDark ? 'bg-yellow-600' : 'bg-yellow-500'}`}>
+                        <ElectricBolt className="w-5 h-5 text-white" />
                       </div>
                       <div>
                         <h4 className={`font-medium ${isDark ? 'text-dark-text' : 'text-gray-900'}`}>
-                          {analysis.reportHeader?.idTrafo || `Analysis ${analysis.id.slice(-4)}`}
+                          {analysis.breakdownData.idTrafo || `Analysis ${analysis.id.slice(-4)}`}
                         </h4>
                         <div className="flex items-center space-x-2 text-sm">
                           <DateRange className={`w-4 h-4 ${isDark ? 'text-dark-muted' : 'text-gray-500'}`} />
                           <span className={isDark ? 'text-dark-muted' : 'text-gray-500'}>
                             {analysis.createdAt.toLocaleDateString('id-ID')}
                           </span>
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            analysis.exportedAt 
-                              ? isDark ? 'bg-green-900/20 text-green-400' : 'bg-green-100 text-green-600'
-                              : isDark ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-600'
-                          }`}>
-                            {analysis.exportedAt ? 'Exported' : 'Not exported'}
+                          <span className={`px-2 py-1 rounded text-xs ${getSeverityColor(analysis.breakdownData.result)}`}>
+                            {analysis.breakdownData.result.toUpperCase()}
                           </span>
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className={`text-sm font-medium ${isDark ? 'text-dark-text' : 'text-gray-900'}`}>
-                        {analysis.triangles.length} triangles
+                        {analysis.breakdownData.average} kV
                       </div>
                       <div className={`text-xs ${isDark ? 'text-dark-muted' : 'text-gray-500'}`}>
-                        {analysis.triangles.filter(t => t.isCompleted).length} completed
+                        Type {analysis.breakdownData.transformerType}
                       </div>
                     </div>
                   </div>
@@ -469,7 +440,7 @@ const Dashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="text-center"
+          className="text-center mt-8"
         >
           <div className="flex justify-center space-x-4">
             <motion.button
@@ -477,8 +448,8 @@ const Dashboard: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               className={`px-6 py-3 rounded-xl font-medium transition-colors ${
                 isDark
-                  ? 'bg-primary-600 hover:bg-primary-700 text-white'
-                  : 'bg-primary-blue hover:bg-primary-700 text-white'
+                  ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
+                  : 'bg-yellow-600 hover:bg-yellow-700 text-white'
               }`}
             >
               <Lightbulb className="w-5 h-5 mr-2 inline" />
@@ -503,4 +474,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard; 
+export default BreakdownVoltageDashboard; 

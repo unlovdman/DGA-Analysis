@@ -1,4 +1,4 @@
-# 🔬 DGA Analysis Web Application
+# 🔬 Transformer Analysis Web Application
 
 [![React](https://img.shields.io/badge/React-19.x-blue.svg)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
@@ -6,72 +6,87 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-cyan.svg)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> **Professional Web Application for Dissolved Gas Analysis (DGA) using Duval Triangle Method**  
-> Compliant with IEEE C57.104-2019 Standard
+> **Professional Web Application for Comprehensive Transformer Analysis**  
+> Supporting both **Dissolved Gas Analysis (DGA)** and **Breakdown Voltage Analysis**
 
-A modern, responsive web application designed for electrical engineers to perform **Dissolved Gas Analysis (DGA)** on power transformers using the **Duval Triangle Method**. The application supports manual data input, multi-triangle analysis, real-time dashboard, and comprehensive PDF reporting.
+A modern, responsive web application designed for electrical engineers to perform comprehensive transformer analysis using industry-standard methods. The platform supports **Dissolved Gas Analysis (DGA)** with Duval Triangle Method and **Breakdown Voltage Analysis** with IEC standards compliance.
 
 ## ✨ Key Features
 
-### 🔬 **Core Analysis Features**
-- **Manual DGA Triangle Analysis** - Triangle 1, 4, and 5 methods
+### 🔬 **Dual Analysis Methods**
+- **DGA Analysis** - Triangle 1, 4, and 5 methods (IEEE C57.104-2019)
+- **Breakdown Voltage Analysis** - IEC 60156-95 with IEC 60422:2013 standards
+- **Unified Landing Page** - Choose your analysis method with elegant interface
+- **Context-Aware Navigation** - Separate dashboards for each analysis type
+
+### ⚡ **Breakdown Voltage Analysis**
+- **Dielectric Strength Testing** - 6 measurement inputs (1×5min, 5×2min)
+- **Transformer Type Classification** - O, A, B, C types with specific thresholds
+- **Automatic Calculation** - Average voltage and condition assessment
+- **Professional Reports** - Structured PDF output with comprehensive analysis
+- **Bulk Export** - Multiple analyses in single PDF document
+
+### 🔬 **DGA Analysis Features**
+- **Manual Triangle Analysis** - Triangle 1, 4, and 5 methods
 - **Multi-Classification Support** - Data 1 (CO-based) to Data 8 (fault-based)
 - **Real-time Fault Detection** - Automatic severity assessment
 - **IEEE C57.104-2019 Compliance** - Industry standard methodology
 
-### 📊 **Dashboard & Analytics**
-- **Real-time Statistics** - Total analyses, completion rates, fault distribution
+### 📊 **Enhanced Dashboard & Analytics**
+- **Dual Dashboard System** - Separate analytics for DGA and Breakdown Voltage
+- **Real-time Statistics** - Analysis counts, success rates, condition distribution
 - **Monthly Trend Analysis** - 6-month historical data visualization
-- **Triangle Method Usage** - Distribution analytics across methods
-- **Fault Severity Breakdown** - Critical, High, Medium, Low categorization
+- **Type Distribution** - Transformer type usage patterns (Breakdown Voltage)
+- **Fault Analysis** - Severity breakdown and triangle method usage (DGA)
 
 ### 🖼️ **Advanced Image Management**
-- **Multiple Images per Triangle** - Upload more than one image per analysis
+- **Multiple Images per Analysis** - Upload multiple images per triangle/test
 - **Dual Upload Methods** - File upload + clipboard paste (Print Screen → Ctrl+V)
 - **Image Source Tracking** - File vs clipboard identification with timestamps
-- **PDF Image Embedding** - Actual images in reports, not just placeholders
+- **PDF Image Embedding** - High-quality images in reports with proper sizing
 
-### 📄 **Enhanced PDF Export**
-- **Dynamic Report Headers** - Customizable transformer information
-- **Selective Export** - Choose which triangles to include
-- **Professional Formatting** - Structured layout with proper spacing
-- **Content Options** - Include/exclude images, gas data, recommendations
-- **Actual Image Embedding** - Real images with proper sizing and aspect ratios
+### 📄 **Professional PDF Export**
+- **Dual Report Types** - Separate formats for DGA and Breakdown Voltage
+- **Customizable Headers** - Dynamic transformer information
+- **Bulk Export** - Multiple analyses in single PDF (Breakdown Voltage)
+- **Selective Export** - Choose triangles/content to include (DGA)
+- **Structured Layout** - Professional formatting with proper tables and spacing
 
-### 💾 **Data Management**
-- **Analysis History** - Save and load previous analyses with localStorage
+### 💾 **Comprehensive Data Management**
+- **Separate History Systems** - Independent storage for each analysis type
+- **Advanced Filtering** - By result, date, transformer type, voltage range
 - **Export Tracking** - Mark which analyses have been exported
-- **Filter & Sort** - By date, triangle method, severity, data classification
 - **Load Previous Work** - Resume analysis from history
+- **Bulk Operations** - Select and export multiple analyses simultaneously
 
 ### 🎨 **Modern UI/UX**
-- **Dark/Light Mode Toggle** - Persistent theme switching with smooth transitions
+- **Dual-Theme Design** - Yellow/Orange for Breakdown, Blue for DGA
+- **Context-Aware Navigation** - Smart routing based on analysis type
+- **Dark/Light Mode Toggle** - Consistent theming across all components
 - **Responsive Design** - Mobile, tablet, and desktop optimized
-- **Framer Motion Animations** - Smooth page transitions and interactions
-- **Glassmorphism Effects** - Modern design aesthetic
-- **Professional Color Scheme** - Consistent across all components
+- **Framer Motion Animations** - Smooth transitions and interactions
 
 ## 📸 Screenshots
 
+### 🏠 **Landing Page - Analysis Selection**
+![Landing Page](https://github.com/user-attachments/assets/47488ae0-4d47-4420-8e58-2692927cfb64)
+*Professional landing page with analysis method selection - choose between Breakdown Voltage and Dissolved Gas Analysis with clear method descriptions and standards information*
+
+### ⚡ **Breakdown Voltage Dashboard**
+![Breakdown Voltage Dashboard](https://github.com/user-attachments/assets/ee4f9c21-a302-45cc-bb6f-158c28504a77)
+*Dedicated dashboard for breakdown voltage analysis with voltage condition distribution, transformer type analytics, monthly trends, and recent analysis history*
+
 ### 🔬 **DGA Analysis Interface**
-![Analysis Interface](https://github.com/user-attachments/assets/47488ae0-4d47-4420-8e58-2692927cfb64)
-*Main DGA analysis interface with triangle selection, gas concentration inputs, fault type selection, and triangle visualization for comprehensive transformer analysis*
+![DGA Analysis Interface](https://github.com/user-attachments/assets/d23b73ba-5de8-4097-aa76-98fa342e82d7)
+*Comprehensive DGA analysis interface with triangle selection, gas concentration inputs, fault type selection, and triangle visualization for transformer analysis*
 
-### 🏠 **Dashboard Overview**
-![Dashboard](https://github.com/user-attachments/assets/ee4f9c21-a302-45cc-bb6f-158c28504a77)
-*Real-time analytics dashboard displaying total analyses, completion rates, monthly trends, fault distribution statistics, and recent analysis history with modern UI design*
-
-### 📊 **Multi-Triangle Analysis Results**
-![Multi-Triangle Analysis](https://github.com/user-attachments/assets/d23b73ba-5de8-4097-aa76-98fa342e82d7)
-*Comprehensive analysis results showing Triangle 1, 4, and 5 methods with fault detection outcomes, severity assessment, and integrated maintenance recommendations*
-
-### 📄 **PDF Export Configuration**
+### 📄 **Professional PDF Reports**
 ![PDF Export](https://github.com/user-attachments/assets/af28a3f8-8bc8-4b09-9373-137f03670394)
-*PDF export modal with transformer information form, triangle selection options, content customization settings, and professional report generation capabilities*
+*Enhanced PDF export with transformer information, structured tables, analysis results, and professional formatting for both analysis types*
 
-### 💾 **Analysis History & Data Management**
+### 💾 **History & Bulk Export**
 ![History Management](https://github.com/user-attachments/assets/b0e02f3d-a5e4-4fc9-8a61-e53af0d62d38)
-*Analysis history dashboard with chronological data display, filtering options, export status tracking, and load previous analysis functionality for data continuity*
+*Advanced history management with filtering, sorting, bulk selection, and multi-analysis PDF export capabilities for comprehensive data management*
 
 ## 🚀 Quick Start
 
@@ -83,8 +98,8 @@ A modern, responsive web application designed for electrical engineers to perfor
 
 ```bash
 # Clone the repository
-git clone https://github.com/unlovdman/DGA-Analysis.git
-cd DGA-Analysis
+git clone https://github.com/unlovdman/Transformer-Analysis.git
+cd Transformer-Analysis
 
 # Install dependencies
 pnpm install
@@ -107,37 +122,40 @@ pnpm run preview
 
 ## 📋 Usage Guide
 
-### 1. **Dashboard Overview**
-- View real-time statistics of your analyses
-- Monitor monthly trends and fault distributions
-- Access recent analyses and quick actions
+### 1. **Analysis Method Selection**
+- Choose between **Breakdown Voltage** or **DGA Analysis** from landing page
+- Each method has dedicated workflows and dashboards
+- Context-aware navigation maintains your analysis type
 
-### 2. **Creating New Analysis**
-- Navigate to **Analysis** tab
+### 2. **Breakdown Voltage Analysis**
+- Input transformer ID and select type (O, A, B, C)
+- Enter 6 dielectric strength measurements
+- View automatic average calculation and condition assessment
+- Export professional PDF reports with structured tables
+
+### 3. **DGA Analysis**
 - Choose triangle method (1, 4, or 5)
 - Select data classification (Data 1-8)
-- Upload images (optional) via file or clipboard
+- Upload images via file or clipboard (optional)
 - Input gas concentration values
-- Select fault type or let CO analysis auto-determine
+- Review fault detection and recommendations
 
-### 3. **Multi-Triangle Analysis**
-- Add multiple triangles for comprehensive analysis
-- Each triangle can have different data classifications
-- View combined overall analysis results
-- Get integrated maintenance recommendations
+### 4. **Dashboard Analytics**
+- **Breakdown Voltage Dashboard**: Voltage conditions, transformer types, trends
+- **DGA Dashboard**: Fault distribution, triangle usage, severity analysis
+- Real-time statistics and historical data visualization
 
-### 4. **PDF Export**
-- Click **Export PDF** after completing analyses
-- Fill in transformer report header information
-- Select which triangles to include
-- Choose content options (images, gas data, recommendations)
-- Download professional PDF report
+### 5. **Advanced Export Features**
+- **Single Export**: Individual analysis to PDF
+- **Bulk Export**: Multiple analyses in one PDF (Breakdown Voltage)
+- **Customizable Content**: Select what to include in reports
+- **Professional Formatting**: Structured layouts with proper tables
 
-### 5. **History Management**
-- Save completed analyses to history
-- Load previous work to continue or review
-- Filter and sort historical data
-- Track export status
+### 6. **History Management**
+- Separate history for each analysis type
+- Advanced filtering by result, date, type
+- Bulk selection and export capabilities
+- Load previous analyses for review or continuation
 
 ## 🔧 Technical Stack
 
@@ -150,18 +168,18 @@ pnpm run preview
 - **Tailwind CSS** - Utility-first CSS framework
 - **Framer Motion** - Advanced animations and transitions
 - **Material-UI Icons** - Professional icon set
-- **Custom Design System** - Consistent color palette and components
+- **Dual Theme System** - Context-aware color schemes
 
 ### **State Management**
 - **React Hooks** - Modern state management
 - **Context API** - Theme and global state
-- **localStorage** - Data persistence
+- **localStorage** - Persistent data storage
 
-### **Utilities & Libraries**
-- **jsPDF** - Client-side PDF generation
-- **Canvas API** - Image processing and manipulation
-- **Clipboard API** - Modern clipboard interactions
-- **TanStack Query** - Data fetching and caching
+### **Analysis & Export**
+- **jsPDF** - Client-side PDF generation with custom tables
+- **Canvas API** - High-quality image processing
+- **Custom Algorithms** - DGA fault detection and voltage analysis
+- **IEEE/IEC Standards** - Compliant calculation methods
 
 ## 📁 Project Structure
 
@@ -169,54 +187,75 @@ pnpm run preview
 src/
 ├── components/
 │   ├── features/
-│   │   ├── Dashboard.tsx        # Real-time analytics dashboard
-│   │   ├── DuvalAnalysis.tsx    # Main analysis interface
-│   │   ├── HistoryModal.tsx     # Analysis history management
-│   │   └── ReportHeaderModal.tsx # PDF export form
+│   │   ├── LandingPage.tsx          # Analysis method selection
+│   │   ├── Dashboard.tsx            # DGA analytics dashboard
+│   │   ├── BreakdownVoltageDashboard.tsx # Breakdown voltage dashboard
+│   │   ├── DuvalAnalysis.tsx        # DGA analysis interface
+│   │   ├── BreakdownVoltageAnalysis.tsx # Breakdown voltage interface
+│   │   ├── BreakdownVoltageHistory.tsx # History with bulk export
+│   │   ├── HistoryModal.tsx         # DGA history management
+│   │   └── ReportHeaderModal.tsx    # PDF export configuration
 │   ├── layout/
-│   │   └── Header.tsx           # Navigation with dark mode toggle
+│   │   └── Header.tsx               # Context-aware navigation
 │   └── ui/
-│       ├── Button.tsx           # Reusable button component
-│       └── LoadingSpinner.tsx   # Loading indicators
+│       ├── Button.tsx               # Reusable components
+│       └── LoadingSpinner.tsx       # Loading indicators
 ├── contexts/
-│   └── ThemeContext.tsx         # Dark/light mode management
+│   └── ThemeContext.tsx             # Dark/light mode management
 ├── data/
-│   ├── duvalTriangles.ts        # Triangle zone definitions
-│   └── faultRecommendations.ts  # IEEE standard recommendations
+│   ├── duvalTriangles.ts            # DGA triangle definitions
+│   ├── breakdownVoltage.ts          # Voltage analysis constants
+│   └── faultRecommendations.ts      # IEEE standard recommendations
 ├── types/
-│   └── index.ts                 # TypeScript type definitions
+│   └── index.ts                     # TypeScript type definitions
 ├── utils/
-│   ├── coAnalysis.ts            # CO-based analysis logic
-│   ├── duvalAnalysis.ts         # Core triangle analysis
-│   └── pdfGenerator.ts          # PDF export functionality
-└── index.css                   # Global styles and design system
+│   ├── coAnalysis.ts                # CO-based DGA analysis
+│   ├── duvalAnalysis.ts             # Triangle analysis logic
+│   └── pdfGenerator.ts              # Dual PDF export system
+└── index.css                       # Global styles and themes
 ```
 
-## 🎯 Duval Triangle Methods
+## 🎯 Analysis Methods
 
-### **Triangle 1** (CH4, C2H4, C2H2)
+### **Breakdown Voltage Analysis**
+- **Standard**: IEC 60156-95 with IEC 60422:2013 limits
+- **Transformer Types**: O (>400KV), A (170-400KV), B (72.5KV), C (<72.5KV)
+- **Measurements**: 1×5min + 5×2min dielectric strength tests
+- **Conditions**: Good, Fair, Poor based on type-specific thresholds
+
+### **DGA Triangle Methods**
+
+#### **Triangle 1** (CH4, C2H4, C2H2)
 - **Primary Detection**: Thermal and electrical faults
 - **Fault Types**: PD, D1, D2, T1, T2, T3, DT
 - **Use Case**: General fault detection in oil-filled transformers
 
-### **Triangle 4** (H2, CH4, C2H6)  
+#### **Triangle 4** (H2, CH4, C2H6)  
 - **Primary Detection**: Low energy electrical discharges
 - **Fault Types**: S, PD, ND, DT, C, D2
 - **Use Case**: Sensitive detection of partial discharges
 
-### **Triangle 5** (CH4, C2H4, C2H6)
+#### **Triangle 5** (CH4, C2H4, C2H6)
 - **Primary Detection**: Thermal faults classification
 - **Fault Types**: O, S, ND, C, T2, T3
 - **Use Case**: Detailed thermal fault analysis
 
-## 📊 Data Classification System
+## 📊 Data Classification Systems
 
-### **Data 1** - CO-Based Analysis
+### **Breakdown Voltage Classification**
+- **Input**: 6 dielectric strength measurements
+- **Calculation**: Automatic average computation
+- **Assessment**: Type-specific condition evaluation
+- **Output**: Good/Fair/Poor with maintenance recommendations
+
+### **DGA Classification**
+
+#### **Data 1** - CO-Based Analysis
 - **AUTO**: Automatic analysis based on CO levels
 - **Severity**: LOW (<500), MEDIUM (500-600), HIGH (>600)
 - **Recommendations**: Based on CO concentration ranges
 
-### **Data 2-8** - Manual Fault Selection
+#### **Data 2-8** - Manual Fault Selection
 - **MANUAL**: Engineer selects specific fault type
 - **Fault Options**: Varies by triangle method
 - **Recommendations**: Based on selected fault characteristics
@@ -226,20 +265,21 @@ src/
 ### **Environment Variables**
 ```env
 # Optional: Customize app behavior
-VITE_APP_TITLE="DGA Analysis"
-VITE_APP_VERSION="1.0.0"
+VITE_APP_TITLE="Transformer Analysis Platform"
+VITE_APP_VERSION="2.0.0"
 ```
 
 ### **Theme Customization**
-Edit `tailwind.config.js` to customize colors, fonts, and design system:
+Edit `tailwind.config.js` to customize colors and design system:
 
 ```javascript
 module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: { /* custom primary colors */ },
-        dark: { /* dark mode palette */ }
+        primary: { /* DGA blue theme */ },
+        yellow: { /* Breakdown voltage theme */ },
+        dark: { /* Dark mode palette */ }
       }
     }
   }
@@ -264,7 +304,7 @@ module.exports = {
 - **First Contentful Paint**: <1.5s
 - **Time to Interactive**: <3s
 - **Lighthouse Score**: 95+
-- **Bundle Size**: <500KB (gzipped)
+- **Bundle Size**: <600KB (gzipped)
 
 ## 🤝 Contributing
 
@@ -287,6 +327,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **IEEE C57.104-2019** standard for DGA methodology
+- **IEC 60156-95 & IEC 60422:2013** for breakdown voltage standards
 - **Duval Triangle** method by Michel Duval
 - **React Team** for the amazing framework
 - **Tailwind CSS** for the utility-first approach
@@ -297,8 +338,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### 🚀 **Ready to analyze your transformers? Get started now!**
 
 ```bash
-git clone https://github.com/unlovdman/DGA-Analysis.git
-cd DGA-Analysis
+git clone https://github.com/unlovdman/Transformer-Analysis.git
+cd Transformer-Analysis
 pnpm install
 pnpm run dev
 ```

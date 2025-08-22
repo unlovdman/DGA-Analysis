@@ -295,6 +295,39 @@ export interface AnalysisHistory {
   exportedAt?: Date;
 }
 
+// Breakdown Voltage Analysis Types
+export type TransformerType = 'O' | 'A' | 'B' | 'C';
+
+export interface TransformerVoltageRange {
+  type: TransformerType;
+  label: string;
+  voltageRange: string;
+  good: string;
+  fair: string;
+  poor: string;
+  goodThreshold: number;
+  fairThreshold: number;
+}
+
+export interface BreakdownVoltageData {
+  id: string;
+  idTrafo: string;
+  transformerType: TransformerType;
+  dielectricStrengths: number[]; // Array of 6 measurements
+  average: number;
+  result: 'good' | 'fair' | 'poor';
+  recommendation: string;
+  createdAt: Date;
+  lastModified: Date;
+}
+
+export interface BreakdownVoltageHistory {
+  id: string;
+  breakdownData: BreakdownVoltageData;
+  createdAt: Date;
+  exportedAt?: Date;
+}
+
 // Enhanced Triangle Data for multiple images
 export interface TriangleImage {
   id: string;

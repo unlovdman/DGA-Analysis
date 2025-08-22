@@ -1,83 +1,118 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './contexts/ThemeContext';
 import Header from './components/layout/Header';
 import Dashboard from './components/features/Dashboard';
+import BreakdownVoltageDashboard from './components/features/BreakdownVoltageDashboard';
 import DuvalAnalysis from './components/features/DuvalAnalysis';
-import './index.css';
+import BreakdownVoltageAnalysis from './components/features/BreakdownVoltageAnalysis';
+import LandingPage from './components/features/LandingPage';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      retry: 1,
-    },
-  },
-});
-
-const pageVariants = {
-  initial: { opacity: 0, y: 20 },
-  in: { opacity: 1, y: 0 },
-  out: { opacity: 0, y: -20 }
-};
-
-const pageTransition = {
-  type: 'tween' as const,
-  ease: 'anticipate' as const,
-  duration: 0.5
-};
+type AnalysisType = 'dga' | 'breakdown' | null;
+type AppView = 'landing' | 'dashboard' | 'analysis';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('analysis');
+  const [currentView, setCurrentView] = useState<AppView>('landing');
+  const [analysisType, setAnalysisType] = useState<AnalysisType>(null);
 
-  const handleNavigation = (page: string) => {
-    setCurrentPage(page);
+  const handleSelectAnalysis = (type: AnalysisType) => {
+    setAnalysisType(type);
+    setCurrentView('analysis');
   };
 
-  const renderCurrentPage = () => {
-    switch (currentPage) {
+  const handleBackToLanding = () => {
+    setCurrentView('landing');
+    setAnalysisType(null);
+  };
+
+  const handleGoToDashboard = () => {
+    setCurrentView('dashboard');
+  };
+
+  const handleBackToDashboard = () => {
+    setCurrentView('dashboard');
+  };
+
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case 'landing':
+        return <LandingPage onSelectAnalysis={handleSelectAnalysis} />;
+      
       case 'dashboard':
-        return <Dashboard />;
-      case 'analysis':
-        return <DuvalAnalysis />;
-      case 'settings':
-        return (
-          <div className="min-h-screen flex items-center justify-center">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-dark-text mb-4">Settings</h2>
-              <p className="text-gray-600 dark:text-dark-muted">Coming soon...</p>
+        // Show appropriate dashboard based on current analysis type
+        if (analysisType === 'breakdown') {
+          return (
+            <div className="min-h-screen">
+              <Header 
+                onNavigate={(tab) => {
+                  if (tab === 'dashboard') setCurrentView('dashboard');
+                  else if (tab === 'analysis') setCurrentView('analysis');
+                }}
+                currentPage="dashboard"
+                onBackToHome={handleBackToLanding}
+              />
+              <BreakdownVoltageDashboard />
             </div>
-          </div>
-        );
+          );
+        } else {
+          // Default to DGA Dashboard
+          return (
+            <div className="min-h-screen">
+              <Header 
+                onNavigate={(tab) => {
+                  if (tab === 'dashboard') setCurrentView('dashboard');
+                  else if (tab === 'analysis') handleSelectAnalysis('dga');
+                }}
+                currentPage="dashboard"
+                onBackToHome={handleBackToLanding}
+              />
+              <Dashboard />
+            </div>
+          );
+        }
+      
+      case 'analysis':
+        if (analysisType === 'dga') {
+          return (
+            <div className="min-h-screen">
+              <Header 
+                onNavigate={(tab) => {
+                  if (tab === 'dashboard') setCurrentView('dashboard');
+                  else if (tab === 'analysis') setCurrentView('analysis');
+                }}
+                currentPage="analysis"
+                onBackToHome={handleBackToLanding}
+              />
+              <DuvalAnalysis onBack={handleBackToLanding} />
+            </div>
+          );
+        } else if (analysisType === 'breakdown') {
+          return (
+            <div className="min-h-screen">
+              <Header 
+                onNavigate={(tab) => {
+                  if (tab === 'dashboard') setCurrentView('dashboard');
+                  else if (tab === 'analysis') setCurrentView('analysis');
+                }}
+                currentPage="analysis"
+                onBackToHome={handleBackToLanding}
+              />
+              <BreakdownVoltageAnalysis onBack={handleBackToLanding} />
+            </div>
+          );
+        }
+        return <LandingPage onSelectAnalysis={handleSelectAnalysis} />;
+      
       default:
-        return <Dashboard />;
+        return <LandingPage onSelectAnalysis={handleSelectAnalysis} />;
     }
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <div className="App min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100 dark:from-dark-bg dark:via-dark-surface dark:to-dark-card transition-colors duration-300">
-          <Header onNavigate={handleNavigation} currentPage={currentPage} />
-          <main className="pt-16">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentPage}
-                initial="initial"
-                animate="in"
-                exit="out"
-                variants={pageVariants}
-                transition={pageTransition}
-                className="w-full"
-              >
-                {renderCurrentPage()}
-              </motion.div>
-            </AnimatePresence>
-          </main>
-        </div>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <div className="App">
+        {renderCurrentView()}
+      </div>
+    </ThemeProvider>
   );
 }
 

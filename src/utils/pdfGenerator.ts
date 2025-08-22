@@ -1,5 +1,5 @@
 import { jsPDF } from 'jspdf';
-import type { ReportHeader, ManualTriangleData, FaultRecommendationConfig } from '../types';
+import type { ReportHeader, ManualTriangleData, FaultRecommendationConfig, BreakdownVoltageData } from '../types';
 import type { AnalysisResult } from './duvalAnalysis';
 
 interface PDFGenerationData {
@@ -9,6 +9,18 @@ interface PDFGenerationData {
   includeImages: boolean;
   includeGasData: boolean;
   includeRecommendations: boolean;
+}
+
+interface BreakdownVoltagePDFData {
+  breakdownData: BreakdownVoltageData;
+  transformerRange: {
+    type: string;
+    label: string;
+    voltageRange: string;
+    good: string;
+    fair: string;
+    poor: string;
+  };
 }
 
 // Helper function to convert image URL to base64 with proper sizing
@@ -39,7 +51,7 @@ const getImageBase64 = (imageUrl: string): Promise<{ dataUrl: string; width: num
       if (width > maxWidth || height > maxHeight) {
         if (aspectRatio > maxWidth / maxHeight) {
           // Image is wider relative to our max dimensions
-          width = maxWidth;
+        width = maxWidth;
           height = maxWidth / aspectRatio;
         } else {
           // Image is taller relative to our max dimensions
@@ -89,7 +101,7 @@ const getImageBase64 = (imageUrl: string): Promise<{ dataUrl: string; width: num
     if (imageUrl.startsWith('blob:')) {
       img.src = imageUrl;
     } else if (imageUrl.startsWith('data:')) {
-      img.src = imageUrl;
+    img.src = imageUrl;
     } else {
       // For regular URLs, add timestamp to avoid cache issues
       img.src = imageUrl + (imageUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
@@ -393,5 +405,411 @@ export const generateDGAPDF = async (data: PDFGenerationData): Promise<void> => 
   // Optimized filename
   const timestamp = new Date().toISOString().slice(0, 16).replace(/[:-]/g, ''); // Shorter timestamp
   const filename = `DGA_${data.reportHeader.idTrafo || 'Report'}_${timestamp}.pdf`;
+  doc.save(filename);
+};
+
+export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData): Promise<void> => {
+  const doc = new jsPDF();
+  let yPosition = 15;
+  const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
+  const margin = 15;
+  const contentWidth = pageWidth - (2 * margin);
+
+  // Helper function to check page break
+  const checkPageBreak = (requiredSpace: number) => {
+    if (yPosition + requiredSpace > pageHeight - 25) {
+      doc.addPage();
+      yPosition = 15;
+    }
+  };
+
+  // Title Section - more compact
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Hasil Pengujian Breakdown Voltage', pageWidth / 2, yPosition, { align: 'center' });
+  yPosition += 15;
+
+  // Transformer Information Section (moved to top before introduction)
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Informasi Transformator', margin, yPosition);
+  yPosition += 8;
+
+  const basicInfo = [
+    ['ID Transformator', data.breakdownData.idTrafo || 'N/A'],
+    ['Jenis Transformator', `Type ${data.breakdownData.transformerType} (${data.transformerRange.voltageRange})`],
+    ['Tanggal Analisis', data.breakdownData.createdAt instanceof Date 
+      ? data.breakdownData.createdAt.toLocaleDateString('id-ID') 
+      : new Date(data.breakdownData.createdAt).toLocaleDateString('id-ID')],
+    ['Standar Pengujian', 'IEC 60156-95 dengan batasan IEC 60422:2013']
+  ];
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  
+  basicInfo.forEach((row, index) => {
+    const currentY = yPosition + (index * 5);
+    doc.setFont('helvetica', 'bold');
+    doc.text(row[0] + ':', margin, currentY);
+    doc.setFont('helvetica', 'normal');
+    doc.text(row[1], margin + 45, currentY);
+  });
+
+  yPosition += basicInfo.length * 5 + 15;
+
+  // Introduction paragraph - smaller
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  const introText = 'Berikut ini adalah hasil pengujian Breakdown Voltage menggunakan standar IEC 60156-95 dengan batasan IEC 60422:2013:';
+  doc.text(introText, margin, yPosition);
+  yPosition += 15;
+
+  // Table with dielectric strength measurements - more compact
+  checkPageBreak(60);
+  
+  // Define table structure
+  const tableData = [
+    ['Oil Analysis', 'Dielectric Strength', 'Hasil'],
+    ['Breakdown Voltage/', '5 Menit', `${data.breakdownData.dielectricStrengths[0]} kV`],
+    ['Tegangan Tembus', '2 Menit', `${data.breakdownData.dielectricStrengths[1]} kV`],
+    ['(kV/2,5 mm)', '2 Menit', `${data.breakdownData.dielectricStrengths[2]} kV`],
+    ['', '2 Menit', `${data.breakdownData.dielectricStrengths[3]} kV`],
+    ['', '2 Menit', `${data.breakdownData.dielectricStrengths[4]} kV`],
+    ['', '2 Menit', `${data.breakdownData.dielectricStrengths[5]} kV`],
+    ['', 'Average', `${data.breakdownData.average} kV`]
+  ];
+
+  const tableStartY = yPosition;
+  const rowHeight = 6; // Reduced from 8
+  const colWidths = [55, 45, 40]; // Slightly reduced
+  
+  // Draw table with both horizontal and vertical lines
+  doc.setLineWidth(0.3);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8); // Reduced from 10
+
+  tableData.forEach((row, rowIndex) => {
+    const currentY = tableStartY + (rowIndex * rowHeight);
+    
+    // Draw horizontal lines
+    if (rowIndex === 0) {
+      // Top border of header
+      doc.line(margin, currentY, margin + colWidths[0] + colWidths[1] + colWidths[2], currentY);
+      // Bottom border of header
+      doc.line(margin, currentY + rowHeight, margin + colWidths[0] + colWidths[1] + colWidths[2], currentY + rowHeight);
+    } else if (rowIndex === tableData.length - 1) {
+      // Bottom border of table
+      doc.line(margin, currentY + rowHeight, margin + colWidths[0] + colWidths[1] + colWidths[2], currentY + rowHeight);
+    } else {
+      // Add horizontal row lines ONLY for Dielectric Strength and Hasil columns (not Oil Analysis)
+      const startX = margin + colWidths[0]; // Start after Oil Analysis column
+      const endX = margin + colWidths[0] + colWidths[1] + colWidths[2]; // End of table
+      doc.line(startX, currentY + rowHeight, endX, currentY + rowHeight);
+    }
+    
+    // Draw cell content
+    let xPos = margin;
+    row.forEach((cell, cellIndex) => {
+      const cellWidth = colWidths[cellIndex];
+      
+      // Draw vertical lines for column separation
+      if (cellIndex === 0) {
+        // Left border of table
+        doc.line(xPos, tableStartY, xPos, tableStartY + (tableData.length * rowHeight));
+      }
+      // Right border of each column
+      doc.line(xPos + cellWidth, tableStartY, xPos + cellWidth, tableStartY + (tableData.length * rowHeight));
+      
+      // Set font style for header row
+      if (rowIndex === 0) {
+        doc.setFont('helvetica', 'bold');
+      } else if (rowIndex === tableData.length - 1) {
+        // Average row - make it bold
+        doc.setFont('helvetica', 'bold');
+      } else {
+        doc.setFont('helvetica', 'normal');
+      }
+      
+      // Center align text in cells
+      const textX = xPos + cellWidth / 2;
+      const textY = currentY + 4; // Adjusted for smaller row height
+      
+      if (cell) { // Only draw text if cell is not empty
+        doc.text(cell, textX, textY, { align: 'center' });
+      }
+      
+      xPos += cellWidth;
+    });
+  });
+
+  yPosition = tableStartY + (tableData.length * rowHeight) + 15;
+
+  // Analysis result paragraph - more compact
+  checkPageBreak(40);
+  doc.setFontSize(9); // Reduced from 11
+  doc.setFont('helvetica', 'normal');
+  
+  const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${data.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2013 transformator tenaga ${data.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${data.breakdownData.transformerType} (${data.transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${data.breakdownData.average} kV termasuk dalam kondisi ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${data.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : data.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${data.breakdownData.recommendation.toLowerCase()}`;
+
+  const resultLines = doc.splitTextToSize(resultText, contentWidth);
+  resultLines.forEach((line: string) => {
+    checkPageBreak(5);
+    doc.text(line, margin, yPosition);
+    yPosition += 4.5; // Reduced line spacing
+  });
+
+  yPosition += 10;
+
+  // Standards Reference - more compact
+  checkPageBreak(25);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Referensi Standar', margin, yPosition);
+  yPosition += 8;
+
+  const standards = [
+    '• IEC 60156-95: Insulating liquids - Determination of the breakdown voltage at power frequency - Test method',
+    '• IEC 60422:2013: Mineral insulating oils in electrical equipment - Supervision and maintenance guidance'
+  ];
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7); // Smaller font
+  
+  standards.forEach((standard) => {
+    checkPageBreak(6);
+    const standardLines = doc.splitTextToSize(standard, contentWidth - 5);
+    standardLines.forEach((line: string) => {
+      doc.text(line, margin, yPosition);
+      yPosition += 4; // Reduced spacing
+    });
+    yPosition += 2;
+  });
+
+  // Footer
+  yPosition = pageHeight - 15;
+    doc.setFontSize(7);
+  doc.setFont('helvetica', 'italic');
+  doc.text(`Report generated on ${new Date().toLocaleDateString('id-ID')} at ${new Date().toLocaleTimeString('id-ID')}`, 
+    pageWidth / 2, yPosition, { align: 'center' });
+
+  // Save the PDF
+  const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+  const filename = `Breakdown_Voltage_Analysis_${data.breakdownData.idTrafo || 'Report'}_${timestamp}.pdf`;
+  doc.save(filename);
+};
+
+// New function for bulk PDF export from history
+export const generateBulkBreakdownVoltagePDF = async (historyItems: any[]): Promise<void> => {
+  if (historyItems.length === 0) {
+    throw new Error('No history items provided for bulk export');
+  }
+
+  const doc = new jsPDF();
+  let isFirstPage = true;
+
+  for (let i = 0; i < historyItems.length; i++) {
+    const historyItem = historyItems[i];
+    
+    // Add new page for each analysis (except the first)
+    if (!isFirstPage) {
+      doc.addPage();
+    }
+    isFirstPage = false;
+
+    let yPosition = 15;
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 15;
+    const contentWidth = pageWidth - (2 * margin);
+
+    // Helper function to check page break
+    const checkPageBreak = (requiredSpace: number) => {
+      if (yPosition + requiredSpace > pageHeight - 25) {
+        doc.addPage();
+        yPosition = 15;
+      }
+    };
+
+    // Get transformer range info
+    const transformerType = historyItem.breakdownData.transformerType;
+    let transformerRange = { voltageRange: '', good: '', fair: '', poor: '' };
+    
+    // Define transformer ranges (you might want to import this from breakdownVoltage.ts)
+    const ranges = {
+      'O': { voltageRange: '> 400KV', good: '> 60', fair: '50-60', poor: '< 50' },
+      'A': { voltageRange: '170-400KV', good: '> 60', fair: '50-60', poor: '< 50' },
+      'B': { voltageRange: '72.5KV', good: '> 50', fair: '40-50', poor: '< 40' },
+      'C': { voltageRange: '< 72.5KV', good: '> 40', fair: '30-40', poor: '< 30' }
+    };
+    
+    transformerRange = ranges[transformerType as keyof typeof ranges] || ranges['C'];
+
+    // Page header with analysis number
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Breakdown Voltage Analysis ${i + 1} of ${historyItems.length}`, pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 10;
+
+    // Title Section
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Hasil Pengujian Breakdown Voltage', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 15;
+
+    // Transformer Information Section (moved before introduction)
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Informasi Transformator', margin, yPosition);
+    yPosition += 8;
+
+    const basicInfo = [
+      ['ID Transformator', historyItem.breakdownData.idTrafo || 'N/A'],
+      ['Jenis Transformator', `Type ${historyItem.breakdownData.transformerType} (${transformerRange.voltageRange})`],
+      ['Tanggal Analisis', new Date(historyItem.createdAt).toLocaleDateString('id-ID')],
+      ['Standar Pengujian', 'IEC 60156-95 dengan batasan IEC 60422:2013']
+    ];
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    
+    basicInfo.forEach((row, index) => {
+      const currentY = yPosition + (index * 5);
+      doc.setFont('helvetica', 'bold');
+      doc.text(row[0] + ':', margin, currentY);
+      doc.setFont('helvetica', 'normal');
+      doc.text(row[1], margin + 45, currentY);
+    });
+
+    yPosition += basicInfo.length * 5 + 15;
+
+    // Introduction paragraph
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    const introText = 'Berikut ini adalah hasil pengujian Breakdown Voltage menggunakan standar IEC 60156-95 dengan batasan IEC 60422:2013:';
+    doc.text(introText, margin, yPosition);
+    yPosition += 15;
+
+    // Table with dielectric strength measurements
+    const tableData = [
+      ['Oil Analysis', 'Dielectric Strength', 'Hasil'],
+      ['Breakdown Voltage/', '5 Menit', `${historyItem.breakdownData.dielectricStrengths[0]} kV`],
+      ['Tegangan Tembus', '2 Menit', `${historyItem.breakdownData.dielectricStrengths[1]} kV`],
+      ['(kV/2,5 mm)', '2 Menit', `${historyItem.breakdownData.dielectricStrengths[2]} kV`],
+      ['', '2 Menit', `${historyItem.breakdownData.dielectricStrengths[3]} kV`],
+      ['', '2 Menit', `${historyItem.breakdownData.dielectricStrengths[4]} kV`],
+      ['', '2 Menit', `${historyItem.breakdownData.dielectricStrengths[5]} kV`],
+      ['', 'Average', `${historyItem.breakdownData.average} kV`]
+    ];
+
+    const tableStartY = yPosition;
+    const rowHeight = 6;
+    const colWidths = [55, 45, 40];
+    
+    // Draw table with both horizontal and vertical lines
+    doc.setLineWidth(0.3);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+
+    tableData.forEach((row, rowIndex) => {
+      const currentY = tableStartY + (rowIndex * rowHeight);
+      
+      // Draw horizontal lines
+      if (rowIndex === 0) {
+        doc.line(margin, currentY, margin + colWidths[0] + colWidths[1] + colWidths[2], currentY);
+        doc.line(margin, currentY + rowHeight, margin + colWidths[0] + colWidths[1] + colWidths[2], currentY + rowHeight);
+      } else if (rowIndex === tableData.length - 1) {
+        doc.line(margin, currentY + rowHeight, margin + colWidths[0] + colWidths[1] + colWidths[2], currentY + rowHeight);
+      } else {
+        // Add horizontal row lines ONLY for Dielectric Strength and Hasil columns (not Oil Analysis)
+        const startX = margin + colWidths[0]; // Start after Oil Analysis column
+        const endX = margin + colWidths[0] + colWidths[1] + colWidths[2]; // End of table
+        doc.line(startX, currentY + rowHeight, endX, currentY + rowHeight);
+      }
+      
+      let xPos = margin;
+      row.forEach((cell, cellIndex) => {
+        const cellWidth = colWidths[cellIndex];
+        
+        // Draw vertical lines for column separation
+        if (cellIndex === 0) {
+          // Left border of table
+          doc.line(xPos, tableStartY, xPos, tableStartY + (tableData.length * rowHeight));
+        }
+        // Right border of each column
+        doc.line(xPos + cellWidth, tableStartY, xPos + cellWidth, tableStartY + (tableData.length * rowHeight));
+        
+        if (rowIndex === 0) {
+          doc.setFont('helvetica', 'bold');
+        } else if (rowIndex === tableData.length - 1) {
+          doc.setFont('helvetica', 'bold');
+        } else {
+          doc.setFont('helvetica', 'normal');
+        }
+        
+        const textX = xPos + cellWidth / 2;
+        const textY = currentY + 4;
+        
+        if (cell) {
+          doc.text(cell, textX, textY, { align: 'center' });
+        }
+        
+        xPos += cellWidth;
+      });
+    });
+
+    yPosition = tableStartY + (tableData.length * rowHeight) + 15;
+
+    // Analysis result paragraph
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    
+    const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${historyItem.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2013 transformator tenaga ${historyItem.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${historyItem.breakdownData.transformerType} (${transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${historyItem.breakdownData.average} kV termasuk dalam kondisi ${historyItem.breakdownData.result === 'good' ? 'baik' : historyItem.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${historyItem.breakdownData.result === 'good' ? 'baik' : historyItem.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${historyItem.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : historyItem.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${historyItem.breakdownData.recommendation.toLowerCase()}`;
+
+    const resultLines = doc.splitTextToSize(resultText, contentWidth);
+    resultLines.forEach((line: string) => {
+      checkPageBreak(5);
+      doc.text(line, margin, yPosition);
+      yPosition += 4.5;
+    });
+
+    yPosition += 10;
+
+    // Standards Reference
+    checkPageBreak(25);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Referensi Standar', margin, yPosition);
+    yPosition += 8;
+
+    const standards = [
+      '• IEC 60156-95: Insulating liquids - Determination of the breakdown voltage at power frequency - Test method',
+      '• IEC 60422:2013: Mineral insulating oils in electrical equipment - Supervision and maintenance guidance'
+    ];
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    
+    standards.forEach((standard) => {
+      checkPageBreak(6);
+      const standardLines = doc.splitTextToSize(standard, contentWidth - 5);
+      standardLines.forEach((line: string) => {
+        doc.text(line, margin, yPosition);
+        yPosition += 4;
+      });
+      yPosition += 2;
+    });
+
+    // Footer for each page
+    const footerY = pageHeight - 15;
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'italic');
+    doc.text(`Analysis ${i + 1}/${historyItems.length} - Generated on ${new Date().toLocaleDateString('id-ID')}`, 
+      pageWidth / 2, footerY, { align: 'center' });
+  }
+
+  // Save the bulk PDF
+  const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+  const filename = `Bulk_Breakdown_Voltage_Analysis_${historyItems.length}_Reports_${timestamp}.pdf`;
   doc.save(filename);
 };

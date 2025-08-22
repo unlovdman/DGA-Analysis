@@ -22,7 +22,8 @@ import {
   Visibility,
   VisibilityOff,
   History,
-  Assignment
+  Assignment,
+  ArrowBack
 } from '@mui/icons-material';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import Button from '../ui/Button';
@@ -100,7 +101,11 @@ const TRIANGLE_1_FAULTS: Triangle1Fault[] = ['PD', 'D1', 'D2', 'T1', 'T2', 'T3',
 const TRIANGLE_4_FAULTS: Triangle4Fault[] = ['S', 'PD', 'ND', 'DT', 'C', 'D2'];
 const TRIANGLE_5_FAULTS: Triangle5Fault[] = ['O', 'S', 'ND', 'C', 'T2', 'T3'];
 
-const DuvalAnalysis: React.FC = () => {
+interface DuvalAnalysisProps {
+  onBack?: () => void;
+}
+
+const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
   const { isDark } = useTheme();
   const [analysisState, setAnalysisState] = useState<ManualAnalysisState>({
     triangles: [],
@@ -827,8 +832,8 @@ const DuvalAnalysis: React.FC = () => {
     <div className={`min-h-screen transition-colors duration-300 ${
       isDark 
         ? 'bg-gradient-to-br from-dark-bg via-dark-surface to-dark-card' 
-        : 'bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-100'
-    } p-6`}>
+        : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'
+    } pt-20 p-6`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -837,19 +842,21 @@ const DuvalAnalysis: React.FC = () => {
           className="text-center mb-8"
         >
           <div className="flex items-center justify-center mb-4">
-            <Science className="w-12 h-12 text-primary-accent mr-4" />
+            <Science className={`w-12 h-12 mr-4 ${
+              isDark ? 'text-blue-400' : 'text-blue-600'
+            }`} />
             <h1 className={`text-4xl font-bold bg-gradient-to-r ${
               isDark 
                 ? 'from-blue-400 to-purple-400' 
-                : 'from-primary-blue to-primary-accent'
+                : 'from-blue-600 to-indigo-600'
             } bg-clip-text text-transparent`}>
-              Manual DGA Triangle Analysis
+              Dissolved Gas Analysis
             </h1>
           </div>
           <p className={`text-lg max-w-3xl mx-auto ${
             isDark ? 'text-dark-muted' : 'text-gray-600'
           }`}>
-            Input data gas secara manual dan pilih fault type untuk analisis yang cepat dan akurat
+            IEEE C57.104-2019 Standard - Duval Triangle Method
           </p>
           <div className="flex items-center justify-center mt-4 space-x-6 text-sm">
             <div className={`flex items-center space-x-2 ${
@@ -1095,7 +1102,7 @@ const DuvalAnalysis: React.FC = () => {
                             isDark ? 'text-dark-text border-dark-border' : 'text-gray-700 border-gray-200'
                           }`}>
                             📎 Attached Images ({triangle.images.length})
-                          </div>
+                                  </div>
                           
                           {triangle.images.map((img, imgIndex) => (
                             <div key={img.id} className={`p-3 border rounded ${
@@ -1107,24 +1114,24 @@ const DuvalAnalysis: React.FC = () => {
                                 }`}>
                                   Image {imgIndex + 1} ({img.source === 'clipboard' ? 'Clipboard' : 'File'})
                                 </span>
-                                <button
-                                  onClick={() => {
-                                    setAnalysisState(prev => ({
-                                      ...prev,
-                                      triangles: prev.triangles.map(t =>
-                                        t.id === triangle.id ? {
-                                          ...t,
-                                          images: t.images.filter(i => i.id !== img.id)
-                                        } : t
-                                      )
-                                    }));
-                                  }}
+                                  <button
+                                    onClick={() => {
+                                      setAnalysisState(prev => ({
+                                        ...prev,
+                                        triangles: prev.triangles.map(t =>
+                                          t.id === triangle.id ? {
+                                            ...t,
+                                            images: t.images.filter(i => i.id !== img.id)
+                                          } : t
+                                        )
+                                      }));
+                                    }}
                                   className="text-red-500 hover:text-red-700 p-1"
                                   title="Delete Image"
-                                >
+                                  >
                                   <Delete className="w-4 h-4" />
-                                </button>
-                              </div>
+                                  </button>
+                                </div>
                               
                               <img
                                 src={img.imageUrl}
@@ -1137,34 +1144,34 @@ const DuvalAnalysis: React.FC = () => {
                                 isDark ? 'text-dark-muted' : 'text-gray-500'
                               }`}>
                                 Uploaded: {img.uploadedAt instanceof Date 
-                                  ? img.uploadedAt.toLocaleDateString('id-ID')
-                                  : new Date(img.uploadedAt).toLocaleDateString('id-ID')
-                                }
+                                    ? img.uploadedAt.toLocaleDateString('id-ID')
+                                    : new Date(img.uploadedAt).toLocaleDateString('id-ID')
+                                  }
+                                </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
 
                           {/* Add More Images */}
                           <div className="flex gap-2 pt-2">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleFileUpload(e, triangle.id)}
-                              className="hidden"
-                              id={`add-file-${triangle.id}`}
-                              multiple
-                            />
-                            <label
-                              htmlFor={`add-file-${triangle.id}`}
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleFileUpload(e, triangle.id)}
+                                className="hidden"
+                                id={`add-file-${triangle.id}`}
+                                multiple
+                              />
+                              <label
+                                htmlFor={`add-file-${triangle.id}`}
                               className={`flex-1 text-center py-2 px-3 border rounded cursor-pointer text-sm ${
                                 isDark
                                   ? 'border-dark-border hover:bg-dark-surface text-dark-text'
                                   : 'border-gray-300 hover:bg-gray-50 text-gray-700'
                               }`}
-                            >
+                              >
                               <CloudUpload className="w-4 h-4 inline mr-2" />
                               Add Files
-                            </label>
+                              </label>
                             
                             <button
                               onClick={() => handlePasteToTriangle(triangle.id)}
