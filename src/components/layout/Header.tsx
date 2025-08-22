@@ -61,33 +61,33 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome, 
         isDark 
           ? 'bg-dark-surface/95 backdrop-blur-lg border-dark-border' 
           : 'bg-white/95 backdrop-blur-lg border-gray-200'
-      } border-b shadow-lg`}
+      } border-b shadow-lg overflow-hidden`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 w-full min-w-0">
           {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.05 }}
-            className="flex items-center space-x-3"
+            className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-shrink"
           >
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${
               analysisType === 'breakdown' 
                 ? isDark ? 'bg-yellow-600' : 'bg-yellow-500'
                 : isDark ? 'bg-primary-600' : 'bg-primary-blue'
             } text-white`}>
               {analysisType === 'breakdown' ? (
-                <ElectricBolt className="w-6 h-6" />
+                <ElectricBolt className="w-4 h-4 sm:w-6 sm:h-6" />
               ) : (
-                <Analytics className="w-6 h-6" />
+                <Analytics className="w-4 h-4 sm:w-6 sm:h-6" />
               )}
             </div>
-            <div>
-              <h1 className={`text-xl font-bold ${
+            <div className="min-w-0 flex-shrink">
+              <h1 className={`text-sm sm:text-xl font-bold truncate ${
                 isDark ? 'text-dark-text' : 'text-gray-900'
               }`}>
                 {headerInfo.title}
               </h1>
-              <p className={`text-xs ${
+              <p className={`text-xs hidden sm:block ${
                 isDark ? 'text-dark-muted' : 'text-gray-500'
               }`}>
                 {headerInfo.subtitle}
@@ -137,22 +137,22 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome, 
           </nav>
 
           {/* Right side controls */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-3 flex-shrink-0">
             {/* Back to Home Button */}
             {onBackToHome && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onBackToHome}
-                className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                className={`flex items-center px-2 sm:px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm sm:text-base ${
                   isDark
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
                     : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600'
                 } shadow-lg hover:shadow-xl`}
                 title="Back to Home"
               >
-                <Home className="w-4 h-4 mr-2" />
-                Home
+                <Home className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Home</span>
               </motion.button>
             )}
 
@@ -188,9 +188,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome, 
                 }`}
               >
                 {isMobileMenuOpen ? (
-                  <Close className="w-6 h-6" />
+                  <Close className="w-5 h-5" />
                 ) : (
-                  <Menu className="w-6 h-6" />
+                  <Menu className="w-5 h-5" />
                 )}
               </motion.button>
             </div>
@@ -231,7 +231,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome, 
                           : 'text-gray-600 hover:bg-gray-100'
                     }`}
                   >
-                    <Icon className="w-6 h-6" />
+                    <Icon className="w-5 h-5" />
                     <span className="font-medium">{item.label}</span>
                   </motion.button>
                 );
