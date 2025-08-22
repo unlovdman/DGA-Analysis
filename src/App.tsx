@@ -32,6 +32,15 @@ function App() {
     setCurrentView('dashboard');
   };
 
+  const handleStartNewAnalysis = () => {
+    setCurrentView('analysis');
+  };
+
+  const handleViewHistory = () => {
+    // This could open a history modal or navigate to a history page
+    // For now, we'll just stay on dashboard as history modals are handled internally
+  };
+
   const renderCurrentView = () => {
     switch (currentView) {
       case 'landing':
@@ -50,7 +59,10 @@ function App() {
                 currentPage="dashboard"
                 onBackToHome={handleBackToLanding}
               />
-              <BreakdownVoltageDashboard />
+              <BreakdownVoltageDashboard 
+                onStartAnalysis={handleStartNewAnalysis}
+                onViewHistory={handleViewHistory}
+              />
             </div>
           );
         } else {
@@ -65,7 +77,10 @@ function App() {
                 currentPage="dashboard"
                 onBackToHome={handleBackToLanding}
               />
-              <Dashboard />
+              <Dashboard 
+                onStartAnalysis={() => handleSelectAnalysis('dga')}
+                onViewHistory={handleViewHistory}
+              />
             </div>
           );
         }

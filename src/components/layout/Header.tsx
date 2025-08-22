@@ -25,9 +25,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentPage, onBackToHome }
 
   const navigationItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Dashboard },
-    { id: 'analysis', label: 'Analysis', icon: Analytics },
-    { id: 'upload', label: 'Upload', icon: Upload },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'analysis', label: 'Analysis', icon: Analytics }
   ];
 
   return (

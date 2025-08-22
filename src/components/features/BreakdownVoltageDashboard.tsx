@@ -1,56 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  ElectricBolt,
   Assessment,
   TrendingUp,
   Warning,
   CheckCircle,
-  Error as ErrorIcon,
   Timeline,
   Analytics,
   History,
   GetApp,
   DateRange,
-  Lightbulb,
-  BarChart
+  ElectricBolt,
+  Error as ErrorIcon,
+  Lightbulb
 } from '@mui/icons-material';
 import { useTheme } from '../../contexts/ThemeContext';
-import type { BreakdownVoltageHistory, BreakdownVoltageData } from '../../types';
+import BreakdownVoltageHistory from './BreakdownVoltageHistory';
+import type { BreakdownVoltageHistory as BreakdownVoltageHistoryType } from '../../types';
 
 interface BreakdownVoltageDashboardStats {
   totalAnalyses: number;
   goodResults: number;
   fairResults: number;
   poorResults: number;
-  recentAnalyses: BreakdownVoltageHistory[];
-  transformerTypeDistribution: { O: number; A: number; B: number; C: number };
-  averageVoltageByType: { O: number; A: number; B: number; C: number };
+  transformerTypeDistribution: Record<string, number>;
+  averageVoltageByType: Record<string, number>;
   monthlyTrend: { month: string; count: number }[];
+  recentAnalyses: any[];
 }
 
-const BreakdownVoltageDashboard: React.FC = () => {
+interface BreakdownVoltageDashboardProps {
+  onStartAnalysis?: () => void;
+  onViewHistory?: () => void;
+}
+
+const BreakdownVoltageDashboard: React.FC<BreakdownVoltageDashboardProps> = ({ onStartAnalysis, onViewHistory }) => {
   const { isDark } = useTheme();
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [stats, setStats] = useState<BreakdownVoltageDashboardStats>({
     totalAnalyses: 0,
     goodResults: 0,
     fairResults: 0,
     poorResults: 0,
-    recentAnalyses: [],
-    transformerTypeDistribution: { O: 0, A: 0, B: 0, C: 0 },
-    averageVoltageByType: { O: 0, A: 0, B: 0, C: 0 },
-    monthlyTrend: []
+    transformerTypeDistribution: {},
+    averageVoltageByType: {},
+    monthlyTrend: [],
+    recentAnalyses: []
   });
 
   useEffect(() => {
     loadDashboardData();
   }, []);
 
+  const handleLoadHistory = (history: BreakdownVoltageHistoryType) => {
+    setShowHistoryModal(false);
+    if (onViewHistory) {
+      onViewHistory();
+    }
+    // You might want to pass the loaded history to a parent component
+    // or navigate to the analysis page with pre-loaded data
+  };
+
   const loadDashboardData = () => {
     try {
       const saved = localStorage.getItem('breakdownVoltageHistory');
       if (saved) {
-        const historyData: BreakdownVoltageHistory[] = JSON.parse(saved).map((item: any) => ({
+        const historyData: BreakdownVoltageHistoryType[] = JSON.parse(saved).map((item: any) => ({
           ...item,
           createdAt: new Date(item.createdAt),
           exportedAt: item.exportedAt ? new Date(item.exportedAt) : undefined
@@ -446,6 +461,7 @@ const BreakdownVoltageDashboard: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={onStartAnalysis}
               className={`px-6 py-3 rounded-xl font-medium transition-colors ${
                 isDark
                   ? 'bg-yellow-600 hover:bg-yellow-700 text-white'
@@ -458,6 +474,7 @@ const BreakdownVoltageDashboard: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setShowHistoryModal(true)}
               className={`px-6 py-3 rounded-xl font-medium border transition-colors ${
                 isDark
                   ? 'border-dark-border text-dark-text hover:bg-dark-surface'
@@ -470,6 +487,15 @@ const BreakdownVoltageDashboard: React.FC = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* BreakdownVoltageHistory Modal */}
+      {showHistoryModal && (
+        <BreakdownVoltageHistory
+          isOpen={showHistoryModal}
+          onClose={() => setShowHistoryModal(false)}
+          onLoadHistory={handleLoadHistory}
+        />
+      )}
     </div>
   );
 };

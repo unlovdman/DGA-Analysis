@@ -15,6 +15,7 @@ import {
   Lightbulb
 } from '@mui/icons-material';
 import { useTheme } from '../../contexts/ThemeContext';
+import HistoryModal from './HistoryModal';
 import type { AnalysisHistory, ManualTriangleData } from '../../types';
 
 interface DashboardStats {
@@ -31,8 +32,14 @@ interface DashboardStats {
   monthlyTrend: { month: string; count: number }[];
 }
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onStartAnalysis?: () => void;
+  onViewHistory?: () => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onStartAnalysis, onViewHistory }) => {
   const { isDark } = useTheme();
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalAnalyses: 0,
     completedAnalyses: 0,
@@ -50,6 +57,15 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  const handleLoadHistory = (history: AnalysisHistory) => {
+    setShowHistoryModal(false);
+    if (onViewHistory) {
+      onViewHistory();
+    }
+    // You might want to pass the loaded history to a parent component
+    // or navigate to the analysis page with pre-loaded data
+  };
 
   const loadDashboardData = () => {
     try {
@@ -475,6 +491,7 @@ const Dashboard: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={onStartAnalysis}
               className={`px-6 py-3 rounded-xl font-medium transition-colors ${
                 isDark
                   ? 'bg-primary-600 hover:bg-primary-700 text-white'
@@ -487,6 +504,7 @@ const Dashboard: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setShowHistoryModal(true)}
               className={`px-6 py-3 rounded-xl font-medium border transition-colors ${
                 isDark
                   ? 'border-dark-border text-dark-text hover:bg-dark-surface'
@@ -499,6 +517,11 @@ const Dashboard: React.FC = () => {
           </div>
         </motion.div>
       </div>
+      <HistoryModal
+        isOpen={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        onLoadHistory={handleLoadHistory}
+      />
     </div>
   );
 };
