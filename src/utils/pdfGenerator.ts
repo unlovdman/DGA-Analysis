@@ -555,11 +555,55 @@ export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData)
   
   const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${data.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2013 transformator tenaga ${data.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${data.breakdownData.transformerType} (${data.transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${data.breakdownData.average} kV termasuk dalam kondisi ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${data.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : data.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${data.breakdownData.recommendation.toLowerCase()}`;
 
-  const resultLines = doc.splitTextToSize(resultText, contentWidth);
-  resultLines.forEach((line: string) => {
+  // Split text into justified lines
+  const words = resultText.split(' ');
+  let currentLine = '';
+  const justifiedLines: string[] = [];
+  
+  words.forEach((word, index) => {
+    const testLine = currentLine + (currentLine ? ' ' : '') + word;
+    const textWidth = doc.getTextWidth(testLine);
+    
+    if (textWidth > contentWidth - 10 && currentLine) {
+      // Add current line and start new one
+      justifiedLines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+    
+    // Add last line
+    if (index === words.length - 1) {
+      justifiedLines.push(currentLine);
+    }
+  });
+
+  // Render justified text
+  justifiedLines.forEach((line: string, index: number) => {
     checkPageBreak(5);
-    doc.text(line, margin, yPosition, { align: 'justify', maxWidth: contentWidth });
-    yPosition += 4.5; // Reduced line spacing
+    if (index < justifiedLines.length - 1) {
+      // Justify all lines except the last one
+      const words = line.split(' ');
+      if (words.length > 1) {
+        const totalWordWidth = words.reduce((sum, word) => sum + doc.getTextWidth(word), 0);
+        const totalSpaceWidth = contentWidth - 10 - totalWordWidth;
+        const spaceWidth = totalSpaceWidth / (words.length - 1);
+        
+        let xPos = margin;
+        words.forEach((word, wordIndex) => {
+          doc.text(word, xPos, yPosition);
+          if (wordIndex < words.length - 1) {
+            xPos += doc.getTextWidth(word) + spaceWidth;
+          }
+        });
+      } else {
+        doc.text(line, margin, yPosition);
+      }
+    } else {
+      // Last line - left aligned
+      doc.text(line, margin, yPosition);
+    }
+    yPosition += 4.5;
   });
 
   yPosition += 10;
@@ -581,10 +625,56 @@ export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData)
   
   standards.forEach((standard) => {
     checkPageBreak(6);
-    const standardLines = doc.splitTextToSize(standard, contentWidth - 5);
-    standardLines.forEach((line: string) => {
-      doc.text(line, margin, yPosition, { align: 'justify', maxWidth: contentWidth - 5 });
-      yPosition += 4; // Reduced spacing
+    
+    // Split text into justified lines
+    const words = standard.split(' ');
+    let currentLine = '';
+    const justifiedLines: string[] = [];
+    
+    words.forEach((word, index) => {
+      const testLine = currentLine + (currentLine ? ' ' : '') + word;
+      const textWidth = doc.getTextWidth(testLine);
+      
+      if (textWidth > contentWidth - 10 && currentLine) {
+        // Add current line and start new one
+        justifiedLines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+      
+      // Add last line
+      if (index === words.length - 1) {
+        justifiedLines.push(currentLine);
+      }
+    });
+
+    // Render justified text
+    justifiedLines.forEach((line: string, index: number) => {
+      checkPageBreak(4);
+      if (index < justifiedLines.length - 1) {
+        // Justify all lines except the last one
+        const words = line.split(' ');
+        if (words.length > 1) {
+          const totalWordWidth = words.reduce((sum, word) => sum + doc.getTextWidth(word), 0);
+          const totalSpaceWidth = contentWidth - 10 - totalWordWidth;
+          const spaceWidth = totalSpaceWidth / (words.length - 1);
+          
+          let xPos = margin;
+          words.forEach((word, wordIndex) => {
+            doc.text(word, xPos, yPosition);
+            if (wordIndex < words.length - 1) {
+              xPos += doc.getTextWidth(word) + spaceWidth;
+            }
+          });
+        } else {
+          doc.text(line, margin, yPosition);
+        }
+      } else {
+        // Last line - left aligned
+        doc.text(line, margin, yPosition);
+      }
+      yPosition += 4;
     });
     yPosition += 2;
   });
@@ -769,10 +859,54 @@ export const generateBulkBreakdownVoltagePDF = async (historyItems: any[]): Prom
     
     const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${historyItem.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2013 transformator tenaga ${historyItem.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${historyItem.breakdownData.transformerType} (${transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${historyItem.breakdownData.average} kV termasuk dalam kondisi ${historyItem.breakdownData.result === 'good' ? 'baik' : historyItem.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${historyItem.breakdownData.result === 'good' ? 'baik' : historyItem.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${historyItem.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : historyItem.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${historyItem.breakdownData.recommendation.toLowerCase()}`;
 
-    const resultLines = doc.splitTextToSize(resultText, contentWidth);
-    resultLines.forEach((line: string) => {
+    // Split text into justified lines
+    const words = resultText.split(' ');
+    let currentLine = '';
+    const justifiedLines: string[] = [];
+    
+    words.forEach((word, index) => {
+      const testLine = currentLine + (currentLine ? ' ' : '') + word;
+      const textWidth = doc.getTextWidth(testLine);
+      
+      if (textWidth > contentWidth - 10 && currentLine) {
+        // Add current line and start new one
+        justifiedLines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+      
+      // Add last line
+      if (index === words.length - 1) {
+        justifiedLines.push(currentLine);
+      }
+    });
+
+    // Render justified text
+    justifiedLines.forEach((line: string, index: number) => {
       checkPageBreak(5);
-      doc.text(line, margin, yPosition, { align: 'justify', maxWidth: contentWidth });
+      if (index < justifiedLines.length - 1) {
+        // Justify all lines except the last one
+        const words = line.split(' ');
+        if (words.length > 1) {
+          const totalWordWidth = words.reduce((sum, word) => sum + doc.getTextWidth(word), 0);
+          const totalSpaceWidth = contentWidth - 10 - totalWordWidth;
+          const spaceWidth = totalSpaceWidth / (words.length - 1);
+          
+          let xPos = margin;
+          words.forEach((word, wordIndex) => {
+            doc.text(word, xPos, yPosition);
+            if (wordIndex < words.length - 1) {
+              xPos += doc.getTextWidth(word) + spaceWidth;
+            }
+          });
+        } else {
+          doc.text(line, margin, yPosition);
+        }
+      } else {
+        // Last line - left aligned
+        doc.text(line, margin, yPosition);
+      }
       yPosition += 4.5;
     });
 
@@ -795,9 +929,55 @@ export const generateBulkBreakdownVoltagePDF = async (historyItems: any[]): Prom
     
     standards.forEach((standard) => {
       checkPageBreak(6);
-      const standardLines = doc.splitTextToSize(standard, contentWidth - 5);
-      standardLines.forEach((line: string) => {
-        doc.text(line, margin, yPosition, { align: 'justify', maxWidth: contentWidth - 5 });
+      
+      // Split text into justified lines
+      const words = standard.split(' ');
+      let currentLine = '';
+      const justifiedLines: string[] = [];
+      
+      words.forEach((word, index) => {
+        const testLine = currentLine + (currentLine ? ' ' : '') + word;
+        const textWidth = doc.getTextWidth(testLine);
+        
+        if (textWidth > contentWidth - 10 && currentLine) {
+          // Add current line and start new one
+          justifiedLines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+        
+        // Add last line
+        if (index === words.length - 1) {
+          justifiedLines.push(currentLine);
+        }
+      });
+
+      // Render justified text
+      justifiedLines.forEach((line: string, index: number) => {
+        checkPageBreak(4);
+        if (index < justifiedLines.length - 1) {
+          // Justify all lines except the last one
+          const words = line.split(' ');
+          if (words.length > 1) {
+            const totalWordWidth = words.reduce((sum, word) => sum + doc.getTextWidth(word), 0);
+            const totalSpaceWidth = contentWidth - 10 - totalWordWidth;
+            const spaceWidth = totalSpaceWidth / (words.length - 1);
+            
+            let xPos = margin;
+            words.forEach((word, wordIndex) => {
+              doc.text(word, xPos, yPosition);
+              if (wordIndex < words.length - 1) {
+                xPos += doc.getTextWidth(word) + spaceWidth;
+              }
+            });
+          } else {
+            doc.text(line, margin, yPosition);
+          }
+        } else {
+          // Last line - left aligned
+          doc.text(line, margin, yPosition);
+        }
         yPosition += 4;
       });
       yPosition += 2;
