@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import type { ReportHeader, ManualTriangleData, FaultRecommendationConfig, BreakdownVoltageData } from '../types';
 import type { AnalysisResult } from './duvalAnalysis';
+import { BREAKDOWN_VOLTAGE_PREVENTIVE_MAINTENANCE } from '../data/breakdownVoltage';
 
 interface PDFGenerationData {
   reportHeader: ReportHeader;
@@ -553,7 +554,7 @@ export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData)
   doc.setFontSize(9); // Reduced from 11
   doc.setFont('helvetica', 'normal');
   
-  const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${data.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2013 transformator tenaga ${data.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${data.breakdownData.transformerType} (${data.transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${data.breakdownData.average} kV termasuk dalam kondisi ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${data.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : data.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${data.breakdownData.recommendation.toLowerCase()}`;
+  const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${data.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2013 transformator tenaga ${data.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${data.breakdownData.transformerType} (${data.transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${data.breakdownData.average} kV termasuk dalam kondisi ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${data.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : data.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${data.breakdownData.recommendation.toLowerCase()} dengan tindakan pemeliharaan preventif ${BREAKDOWN_VOLTAGE_PREVENTIVE_MAINTENANCE[data.breakdownData.result]}.`;
 
   // Split text into justified lines
   const words = resultText.split(' ');

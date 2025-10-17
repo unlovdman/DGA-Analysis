@@ -4,7 +4,7 @@ import { ElectricBolt, Assessment, CheckCircle, Warning, Error as ErrorIcon, Sav
 import { useTheme } from '../../contexts/ThemeContext';
 import Button from '../ui/Button';
 import BreakdownVoltageHistoryModal from './BreakdownVoltageHistory';
-import { TRANSFORMER_VOLTAGE_RANGES, analyzeBreakdownVoltage } from '../../data/breakdownVoltage';
+import { BREAKDOWN_VOLTAGE_PREVENTIVE_MAINTENANCE, TRANSFORMER_VOLTAGE_RANGES, analyzeBreakdownVoltage } from '../../data/breakdownVoltage';
 import { generateBreakdownVoltagePDF } from '../../utils/pdfGenerator';
 import type { BreakdownVoltageData, TransformerType } from '../../types';
 
@@ -172,7 +172,7 @@ const BreakdownVoltageAnalysis: React.FC<BreakdownVoltageAnalysisProps> = ({ onB
           <p className={`text-lg max-w-3xl mx-auto ${
             isDark ? 'text-dark-muted' : 'text-gray-600'
           }`}>
-            IEC 60156-95 Method with IEC 60422:2013 Standards
+            IEC 60156-95 Method with IEC 60422:2024 Standards
           </p>
         </motion.div>
 
@@ -381,6 +381,31 @@ const BreakdownVoltageAnalysis: React.FC<BreakdownVoltageAnalysisProps> = ({ onB
                   {analysisData.recommendation}
                 </p>
               </div>
+
+              {/* Preventive Maintenance */}
+              <div className={`mt-4 p-6 rounded-xl border ${
+                isDark 
+                  ? 'bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border-yellow-700/30' 
+                  : 'bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200'
+              }`}>
+                <h4 className={`font-bold text-lg mb-4 ${
+                  isDark ? 'text-yellow-300' : 'text-yellow-800'
+                }`}>
+                  Pemeliharaan Preventif
+                </h4>
+                <p className={`leading-relaxed ${
+                  isDark ? 'text-dark-text' : 'text-gray-700'
+                }`}>
+                  {
+                    analysisData.result
+                      ? BREAKDOWN_VOLTAGE_PREVENTIVE_MAINTENANCE[analysisData.result]
+                      : 'Belum ada hasil analisis'
+                  }
+                </p>
+              </div>
+
+
+              
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4 mt-8">

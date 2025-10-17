@@ -44,11 +44,19 @@ export const TRANSFORMER_VOLTAGE_RANGES: TransformerVoltageRange[] = [
 ];
 
 export const BREAKDOWN_VOLTAGE_RECOMMENDATIONS = {
-  good: 'BAIK: Dilakukan Resampling Secara Berkala 6-12 Bulan untuk monitoring isolasi tegangan tembus dan lakukan purifikasi atau filtering oil guna meningkatkan kualitas isolasi tegangan tembus.',
-  fair: 'CUKUP: Dilakukan resampling secara berkala 3-6 bulan untuk monitoring isolasi tegangan tembus dan lakukan purifikasi atau filtering oil guna meningkatkan kualitas isolasi tegangan tembus.',
-  poor: 'BURUK: Filtering oil guna meningkatkan kualitas isolasi tegangan tembus dan lakukan pengambilan sampel DGA untuk mengetahui gas aktif yang terlarut pada trafo.'
+  // good: 'BAIK: Dilakukan Resampling Secara Berkala 6-12 Bulan untuk monitoring isolasi tegangan tembus dan lakukan purifikasi atau filtering oil guna meningkatkan kualitas isolasi tegangan tembus.',
+  good: 'Resampling secara berkala 6-12 Bulan.',
+  // fair: 'CUKUP: Dilakukan resampling secara berkala 3-6 bulan untuk monitoring isolasi tegangan tembus dan lakukan purifikasi atau filtering oil guna meningkatkan kualitas isolasi tegangan tembus.',
+  fair: 'Resampling Breakdown Voltage secara berkala 3-6 bulan dan pengambilan sampling Dissolved Gas Analysis',
+  poor: 'Penggantian oil'
+  // poor: 'BURUK: Filtering oil guna meningkatkan kualitas isolasi tegangan tembus dan lakukan pengambilan sampel DGA untuk mengetahui gas aktif yang terlarut pada trafo.'
 };
 
+export const BREAKDOWN_VOLTAGE_PREVENTIVE_MAINTENANCE = {
+  good: 'Lakukan monitoring Transformator',
+  fair: 'Purifikasi dan lakukan resampling Breakdown Voltage setelah purifikasi',
+  poor: 'Purifikasi dan lakukan resampling setelah purifikasi'
+};
 export const analyzeBreakdownVoltage = (average: number, transformerType: string) => {
   const range = TRANSFORMER_VOLTAGE_RANGES.find(r => r.type === transformerType);
   if (!range) return { result: 'poor', recommendation: BREAKDOWN_VOLTAGE_RECOMMENDATIONS.poor };
