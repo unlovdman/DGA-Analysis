@@ -98,8 +98,8 @@ A modern, responsive web application designed for electrical engineers to perfor
 
 ```bash
 # Clone the repository
-git clone https://github.com/unlovdman/Transformer-Analysis.git
-cd Transformer-Analysis
+git clone git@github.com:unlovdman/DGA-Analysis.git
+cd DGA-Analysis
 
 # Install dependencies
 pnpm install
