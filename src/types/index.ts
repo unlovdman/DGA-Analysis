@@ -221,11 +221,12 @@ export interface AppConfig {
 // Export all fault recommendations constant type
 export interface FaultRecommendationConfig {
   description: string;
-  actions: string[];
-  intervals?: {
-    [key: string]: string;
-  };
-} 
+  rekomendasi: string[];
+  preventif: string[];
+  note?: string;
+}
+
+ 
 
 // Data classification types
 export type DataClassification = 'Data 1' | 'Data 2' | 'Data 3' | 'Data 4' | 'Data 5' | 'Data 6' | 'Data 7' | 'Data 8';

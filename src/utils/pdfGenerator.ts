@@ -353,7 +353,9 @@ export const generateDGAPDF = async (data: PDFGenerationData): Promise<void> => 
   }
 
   // Compact Recommendations section
-  if (data.includeRecommendations && data.overallResult?.recommendations) {
+  // if (data.includeRecommendations && data.overallResult?.recommendations) {
+    if (data.includeRecommendations && Array.isArray(data.overallResult?.recommendations)) {
+
     checkPageBreak(30);
 
     doc.setFontSize(12); // Reduced from 16
@@ -362,30 +364,72 @@ export const generateDGAPDF = async (data: PDFGenerationData): Promise<void> => 
     yPosition += 10; // Reduced from 15
 
     data.overallResult.recommendations.forEach((rec: FaultRecommendationConfig, index: number) => {
-      checkPageBreak(25); // Reduced space requirement
-
-      // Compact recommendation header
-      doc.setFillColor(252, 248, 240); // Very light orange
-      doc.rect(margin, yPosition - 2, contentWidth, 6, 'F'); // Reduced height
-      doc.setFontSize(10); // Increased from 9
+      checkPageBreak(25);
+    
+      // Header
+      doc.setFillColor(252, 248, 240);
+      doc.rect(margin, yPosition - 2, contentWidth, 6, 'F');
+      doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       doc.text(`${index + 1}. ${rec.description}`, margin + 2, yPosition + 1.5);
-      yPosition += 7; // Reduced from 10
-
-      // Compact recommendation actions
-      doc.setFontSize(8); // Increased from 7
-      doc.setFont('helvetica', 'normal');
-      rec.actions.forEach((action: string) => {
-        checkPageBreak(6);
-        const lines = doc.splitTextToSize(`• ${action}`, contentWidth - 8);
-        lines.forEach((line: string) => {
-          doc.text(line, margin + 4, yPosition, { align: 'justify', maxWidth: contentWidth - 8 }); // Added justify alignment
-          yPosition += 4; // Increased line spacing from 3
+      yPosition += 7;
+    
+      // === Rekomendasi ===
+      if (rec.rekomendasi?.length) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.text('Rekomendasi Pemeliharaan:', margin + 3, yPosition);
+        yPosition += 5;
+    
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        rec.rekomendasi.forEach((item: string) => {
+          checkPageBreak(6);
+          const lines = doc.splitTextToSize(`• ${item}`, contentWidth - 8);
+          lines.forEach((line: string) => {
+            doc.text(line, margin + 5, yPosition);
+            yPosition += 4;
+          });
+          yPosition += 1;
         });
-        yPosition += 1; // Reduced spacing between recommendations
-      });
-      yPosition += 3; // Reduced spacing between recommendations
+      }
+    
+      // === Preventif ===
+      if (rec.preventif?.length) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.text('Pemeliharaan Preventif:', margin + 3, yPosition);
+        yPosition += 5;
+    
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        rec.preventif.forEach((item: string) => {
+          checkPageBreak(6);
+          const lines = doc.splitTextToSize(`• ${item}`, contentWidth - 8);
+          lines.forEach((line: string) => {
+            doc.text(line, margin + 5, yPosition);
+            yPosition += 4;
+          });
+          yPosition += 1;
+        });
+      }
+    
+      // === Note (opsional) ===
+      if (rec.note) {
+        yPosition += 2;
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(100, 100, 100);
+        const noteLines = doc.splitTextToSize(`Note: ${rec.note}`, contentWidth - 8);
+        noteLines.forEach((line) => {
+          doc.text(line, margin + 5, yPosition);
+          yPosition += 4;
+        });
+        doc.setTextColor(0, 0, 0);
+      }
+    
+      yPosition += 4;
     });
+    
   }
 
   // Compact Footer

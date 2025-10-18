@@ -1546,7 +1546,7 @@ const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
                     Rekomendasi Detail Pemeliharaan
                   </h3>
                   
-                  <div className="space-y-6">
+                  {/* <div className="space-y-6">
                     {analysisState.overallResult.recommendations.map((rec, index) => (
                       <motion.div
                         key={index}
@@ -1579,7 +1579,104 @@ const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
                         </div>
                       </motion.div>
                     ))}
-                  </div>
+                  </div> */}
+                  
+                  <div className="space-y-6">
+  {analysisState.overallResult.recommendations.map((rec, index) => (
+    <motion.div
+      key={index}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.1 }}
+      className={`rounded-xl p-6 border transition-colors duration-300 ${
+        isDark
+          ? 'bg-gradient-to-r from-blue-900/20 to-indigo-900/20 border-blue-700/30'
+          : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
+      }`}
+    >
+      {/* Judul Fault */}
+      <h4
+        className={`text-xl font-bold mb-6 flex items-center ${
+          isDark ? 'text-blue-300' : 'text-blue-800'
+        }`}
+      >
+        <CheckCircle className="w-6 h-6 mr-2" />
+        {rec.description}
+      </h4>
+
+      {/* Dua kolom: Rekomendasi dan Preventif */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Rekomendasi */}
+        <div
+          className={`rounded-xl p-5 border ${
+            isDark
+              ? 'bg-gradient-to-br from-yellow-900/20 to-orange-900/20 border-yellow-700/30'
+              : 'bg-gradient-to-br from-yellow-50 to-orange-50 border-yellow-200'
+          }`}
+        >
+          <h5
+            className={`font-bold text-lg mb-3 ${
+              isDark ? 'text-yellow-300' : 'text-yellow-800'
+            }`}
+          >
+             Rekomendasi Pemeliharaan
+          </h5>
+          {rec.rekomendasi?.length ? (
+            <ul className="space-y-2 list-disc list-inside">
+              {rec.rekomendasi.map((item, idx) => (
+                <li
+                  key={idx}
+                  className={`${isDark ? 'text-dark-text' : 'text-gray-700'} leading-relaxed`}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={`${isDark ? 'text-dark-muted' : 'text-gray-500'}`}>
+              Tidak ada rekomendasi spesifik.
+            </p>
+          )}
+        </div>
+
+        {/* Preventif */}
+        <div
+          className={`rounded-xl p-5 border ${
+            isDark
+              ? 'bg-gradient-to-br from-green-900/20 to-emerald-900/20 border-green-700/30'
+              : 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200'
+          }`}
+        >
+          <h5
+            className={`font-bold text-lg mb-3 ${
+              isDark ? 'text-green-300' : 'text-green-800'
+            }`}
+          >
+             Pemeliharaan Preventif
+          </h5>
+          {rec.preventif?.length ? (
+            <ul className="space-y-2 list-disc list-inside">
+              {rec.preventif.map((item, idx) => (
+                <li
+                  key={idx}
+                  className={`${isDark ? 'text-dark-text' : 'text-gray-700'} leading-relaxed`}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={`${isDark ? 'text-dark-muted' : 'text-gray-500'}`}>
+              Tidak ada tindakan preventif spesifik.
+            </p>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  ))}
+</div>
+
+
                 </div>
               )}
             </motion.div>

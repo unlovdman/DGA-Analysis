@@ -1,169 +1,193 @@
 import type { FaultRecommendationConfig, FaultType } from '../types';
 
-export const FAULT_RECOMMENDATIONS: Record<FaultType, FaultRecommendationConfig> = {
-  // Triangle 1 Faults
+export const FAULT_RECOMMENDATIONS: Record<string, FaultRecommendationConfig> = {
   'PD': {
     description: 'Partial Discharge',
-    actions: [
-      'Lakukan pengukuran PD secara periodik (6 – 12 Bulan) menggunakan peralatan standar PD detector',
-      'Prioritaskan metode pengukuran yang non-invasif dan mudah, seperti metode Ultrasonik atau TEV (Transient Earth Voltage)',
-      'Lakukan pengecekan pada kondisi rongga gas dan isolasi padat secara visual untuk memastikan tidak ada kerusakan fisik, korosi, atau kebocoran',
-      'Perbaikan atau penggantian isolator yang retak atau rusak, karena isolasi yang rusak dapat menjadi titik awal terjadinya partial discharge',
-      'Cek tekanan gas isolasi secara rutin untuk memastikan tidak ada penurunan yang signifikan (2 bar)',
-      'Pastikan transformator dan ruang isolasi bebas dari kelembaban berlebih (30℃ - 40℃)',
-      'Lakukan pemeriksaan suhu operasional transformator (60℃ - 65℃) agar tidak melewati batas aman'
-    ]
+    rekomendasi: [
+      'Prioritaskan metode pengukuran yang non-invasif dan mudah, seperti metode Ultrasonik atau TEV (Transient Earth Voltage).',
+      'Perbaikan atau penggantian isolator yang retak atau rusak.',
+      'Cek tekanan gas isolasi secara rutin untuk memastikan tidak ada penurunan yang signifikan.',
+      'Pastikan transformator dan ruang isolasi bebas dari kelembaban berlebih (30℃ - 40℃).'
+    ],
+    preventif: [
+      'Lakukan pengukuran PD secara periodik (6–12 Bulan) menggunakan peralatan standar PD detector.',
+      'Lakukan pengecekan pada kondisi rongga gas dan isolasi padat secara visual untuk memastikan tidak ada kerusakan fisik, korosi, atau kebocoran.',
+      'Lakukan pemeriksaan suhu operasional transformator (60℃ - 65℃) agar tidak melewati batas aman.'
+    ],
+    note: 'Jika tekanan gas menurun, lakukan pengisian ulang gas isolasi Nitrogen sesuai prosedur (2,5 bar).'
   },
-  
+
   'D1': {
     description: 'Low Energy Discharge (Arcing Ringan)',
-    actions: [
-      'Lakukan DGA secara rutin: Monitoring kandungan gas utama seperti metana (CH4), etilena (C2H4) dan asetilena (C2H2)',
-      'Pantau parameter lain: Selain DGA, cek juga suhu, kebocoran minyak, kebersihan permukaan trafo, dan kondisi busbar/bushing secara visual',
-      'Bersihkan isolator dan bushing: Pastikan tidak ada debu, karbon, atau sisa arcing pada isolasi, bushing, dan terminal trafo',
-      'Perbaiki atau ganti bagian yang rusak: Segera lakukan perbaikan pada isolasi yang menunjukkan tanda degradasi atau bekas arcing ringan',
-      'Kencangkan sambungan listrik: Pastikan semua terminal, baut, dan sambungan kabel tidak longgar',
-      'Optimalkan sistem pentanahan: Pastikan grounding trafo dalam kondisi baik guna menekan potensi loncatan listrik',
-      'Pengujian tegangan tembus minyak: Lakukan pengujian breakdown voltage pada minyak trafo secara berkala',
-      'Rekondisi minyak bila perlu: Jika setelah filtrasi kualitas minyak masih buruk, lakukan penggantian minyak isolasi'
+    rekomendasi: [
+      'Lakukan Dissolved Gas Analysis (DGA) secara rutin untuk memantau kandungan gas utama seperti metana (CH4), etilena (C2H4), dan asetilena (C2H2).',
+      'Pantau parameter lain seperti suhu, kebocoran minyak, kebersihan permukaan trafo, serta kondisi busbar dan bushing secara visual.',
+      'Bersihkan isolator dan bushing dari debu, karbon, atau sisa arcing pada isolasi dan terminal trafo.',
+      'Perbaiki atau ganti bagian isolasi yang menunjukkan tanda degradasi atau bekas arcing ringan.',
+      'Kencangkan sambungan listrik untuk memastikan tidak ada terminal, baut, atau sambungan kabel yang longgar.',
+      'Optimalkan sistem pentanahan untuk menekan potensi loncatan listrik.',
+      'Lakukan pengujian tegangan tembus minyak secara berkala.',
+      'Rekondisi atau ganti minyak jika setelah filtrasi kualitas minyak masih buruk.'
+    ],
+    preventif: [
+      'Jadwalkan pemeliharaan berkala termasuk pengujian breakdown voltage dan analisis tren gas hasil DGA.',
+      'Gunakan metode infrared thermography untuk deteksi awal hotspot kecil.',
+      'Pantau laju peningkatan asetilena (C2H2) untuk mendeteksi dini kemungkinan arcing berulang.',
+      'Evaluasi sistem pendingin dan ventilasi untuk memastikan suhu operasi tetap stabil.'
     ]
   },
 
   'D2': {
     description: 'High Energy Discharge (Arcing Berat)',
-    actions: [
-      'Lakukan analisa Dissolved Gas Analysis secara lebih sering (2-4 bulan): Untuk deteksi dini kenaikan tajam gas-gas penanda high-energy discharge, terutama (C2H2)',
-      'Pantau hasil DGA: Jika konsentrasi gas D2 meningkat, segera lakukan investigasi mendalam',
-      'Gunakan infrared thermography: Deteksi early hotspot akibat arcing',
-      'Inspeksi internal trafo: Lakukan shutdown terkontrol dan buka cover utama untuk inspeksi visual bagian dalam',
-      'Cek kondisi isolasi dan gulungan: Ganti atau rekondisi isolasi kertas/minyak yang menunjukkan tanda kerusakan ekstrim',
-      'Perbaikan terminal dan sambungan: Pastikan tidak ada sambungan longgar atau terbakar akibat arcing berat',
-      'Pembersihan komponen: Bersihkan sisa karbon, debris, dan partikel logam yang dihasilkan dari pelepasan arcing',
-      'Pengujian tegangan tembus minyak: Lakukan breakdown voltage test sesuai standar IEC 60156-95',
-      'Periksa warna minyak: Minyak yang menghitam/gelap menandakan dekomposisi akibat arcing berat dan perlu segera diganti',
-      'Periksa efektivitas sistem pendingin: Pastikan radiator, kipas, dan sirkulasi minyak bekerja optimal'
+    rekomendasi: [
+      'Lakukan analisis DGA lebih sering (2–4 bulan) untuk mendeteksi kenaikan tajam gas penanda high-energy discharge, terutama C2H2.',
+      'Pantau hasil DGA secara berkala dan lakukan investigasi mendalam jika konsentrasi gas meningkat signifikan.',
+      'Gunakan infrared thermography untuk mendeteksi hotspot akibat arcing berat.',
+      'Lakukan inspeksi internal transformator dengan shutdown terkontrol untuk memastikan tidak ada kerusakan fatal.',
+      'Ganti atau rekondisi isolasi kertas/minyak yang menunjukkan kerusakan ekstrem.',
+      'Pastikan sambungan listrik dan terminal tidak longgar atau terbakar akibat arcing berat.',
+      'Bersihkan sisa karbon dan partikel logam hasil pelepasan arcing.',
+      'Periksa warna minyak; minyak gelap menandakan dekomposisi akibat arcing berat dan perlu segera diganti.',
+      'Pastikan sistem pendingin (radiator, kipas, sirkulasi minyak) bekerja optimal.'
+    ],
+    preventif: [
+      'Tingkatkan frekuensi DGA untuk memantau tren gas C2H2.',
+      'Gunakan proteksi suhu otomatis atau alarm dini untuk mencegah overheating lokal.',
+      'Lakukan pemeriksaan tekanan minyak dan pendinginan setiap bulan untuk menjaga kestabilan termal.'
     ]
   },
 
   'T1': {
     description: 'Thermal Fault < 300°C',
-    actions: [
-      'Rutin melakukan monitoring analisa gas terlarut Dissolved Gas Analysis yang dianalisis dengan metode Duval Triangle',
-      'Pengendalian suhu operasi trafo agar tetap dalam batas normal, termasuk pemeriksaan sistem pendingin (radiator, kipas, sirkulasi minyak)',
-      'Pemeriksaan fisik dan pembersihan bagian terminal, bushing, dan sambungan untuk memastikan tidak ada kontak longgar',
-      'Pengujian dan perawatan minyak isolasi secara berkala dengan pengujian tegangan tembus minyak dan filtrasi minyak',
-      'Memastikan sistem grounding dan proteksi berfungsi dengan baik untuk menghindari gangguan listrik sekunder',
-      'Melakukan evaluasi beban trafo dan operasional, hindari operasi berlebih yang dapat meningkatkan suhu kerja trafo',
-      'Tingkatkan frekuensi pengujian dan lakukan pemantauan tren agar gangguan tidak berkembang menjadi fault medium',
-      'Implementasi jadwal preventive maintenance terprogram meliputi DGA, pemeriksaan visual, pengujian isolasi, dan perawatan sistem pendingin'
+    rekomendasi: [
+      'Lakukan monitoring rutin terhadap hasil DGA dengan analisis Duval Triangle.',
+      'Pastikan suhu operasi transformator tetap dalam batas normal dengan memeriksa sistem pendingin (radiator, kipas, dan sirkulasi minyak).',
+      'Periksa dan bersihkan terminal, bushing, dan sambungan untuk menghindari kontak longgar.',
+      'Uji dan rawat minyak isolasi secara berkala melalui pengujian breakdown voltage dan filtrasi minyak.',
+      'Pastikan sistem grounding dan proteksi berfungsi dengan baik.',
+      'Evaluasi beban operasi trafo agar tidak melebihi kapasitas nominal.'
+    ],
+    preventif: [
+      'Lakukan pemantauan tren gas thermal untuk mencegah peningkatan menuju kategori fault lebih tinggi.',
+      'Implementasikan jadwal preventive maintenance terprogram meliputi DGA, pemeriksaan visual, pengujian isolasi, dan perawatan sistem pendingin.'
     ]
   },
 
   'T2': {
-    description: 'Thermal Fault 300-700°C',
-    actions: [
-      'Rutin melakukan monitoring dan analisa gas terlarut minyak trafo secara berkala dengan metode Duval Triangle',
-      'Evaluasi dan optimasi sistem pendinginan trafo, seperti radiator, kipas angin, dan sirkulasi minyak isolasi',
-      'Pengujian kualitas minyak isolasi secara berkala, termasuk uji tegangan tembus (breakdown voltage) dan filtrasi atau penggantian minyak',
-      'Inspeksi fisik berkala pada terminal, busbar, dan sambungan kelistrikan untuk mendeteksi kontak longgar, kotoran, atau oksidasi',
-      'Pengencangan sambungan mekanis dan elektris secara rutin untuk mencegah hotspot akibat kontak buruk',
-      'Evaluasi dan pengaturan beban trafo agar tidak melebihi kapasitas desain',
-      'Perbaikan atau penggantian komponen isolasi yang terindikasi rusak akibat pemanasan',
-      'Memastikan grounding dan sistem proteksi trafo berfungsi optimal',
-      'Tingkatkan frekuensi pengujian dan inspeksi bila trennya menunjukkan kenaikan gas thermal T2'
+    description: 'Thermal Fault 300–700°C',
+    rekomendasi: [
+      'Lakukan monitoring dan analisis DGA berkala untuk mendeteksi gas hasil degradasi termal.',
+      'Evaluasi sistem pendinginan (radiator, kipas, sirkulasi minyak) dan lakukan perawatan jika performanya menurun.',
+      'Periksa terminal dan sambungan kelistrikan untuk mendeteksi kontak longgar, kotoran, atau oksidasi.',
+      'Ganti komponen isolasi yang menunjukkan degradasi akibat panas tinggi.',
+      'Lakukan evaluasi dan pengaturan ulang beban transformator untuk mencegah overload.',
+      'Pastikan grounding dan proteksi sistem bekerja optimal.'
+    ],
+    preventif: [
+      'Tingkatkan frekuensi pengujian kualitas minyak isolasi (uji BDV, tan delta, kadar air).',
+      'Lakukan inspeksi visual tiap 3–6 bulan terhadap terminal, konektor, dan area berpotensi hotspot.'
     ]
   },
 
   'T3': {
     description: 'Thermal Fault > 700°C',
-    actions: [
-      'Lakukan inspeksi internal trafo secara menyeluruh dalam waktu dekat setelah indikasi high thermal fault terdeteksi',
-      'Lakukan shutdown terkontrol sesegera mungkin untuk menghindari kerusakan yang lebih parah',
-      'Ganti atau rekondisi isolasi internal trafo yang sudah mengalami degradasi berat akibat overheating',
-      'Pemeriksaan dan penggantian minyak isolasi dilakukan secara menyeluruh, karena minyak bisa mengalami degradasi serius',
-      'Periksa sistem pendingin dan pastikan berfungsi optimal',
-      'Perbaikan sambungan listrik dan terminal yang mengalami kerusakan atau hotspot akibat panas berlebih',
-      'Pantau frekuensi dan kualitas pengujian DGA secara lebih intensif ke depan',
-      'Pastikan proteksi trafo (relay, Buchholz relay, proteksi tekanan) bekerja optimal',
-      'Evaluasi beban operasi trafo dan perencanaan penggantian atau upgrade jika diperlukan',
-      'Dokumentasikan secara lengkap seluruh tindakan pemeliharaan, hasil inspeksi, dan kondisi DGA'
+    rekomendasi: [
+      'Lakukan inspeksi internal secara menyeluruh segera setelah indikasi fault terdeteksi.',
+      'Segera lakukan shutdown terkontrol untuk mencegah kerusakan lebih parah.',
+      'Ganti atau rekondisi isolasi internal yang mengalami degradasi berat.',
+      'Lakukan penggantian total minyak isolasi karena kemungkinan besar telah terdegradasi.',
+      'Periksa sambungan listrik dan terminal dari indikasi kerusakan akibat panas tinggi.',
+      'Pastikan sistem proteksi (relay, Buchholz relay, tekanan) berfungsi baik.'
+    ],
+    preventif: [
+      'Pantau tren gas hasil DGA dengan interval lebih pendek (2–3 bulan).',
+      'Catat dan dokumentasikan seluruh tindakan pemeliharaan dan hasil pengujian secara konsisten.'
     ]
   },
 
   'DT': {
     description: 'Discharge With Thermal Component',
-    actions: [
-      'Telusuri riwayat beban, suhu minyak, dan suhu belitan untuk memastikan apakah terjadi overload atau suhu yang melebihi batas',
-      'Periksa apakah terdapat lonjakan beban mendadak atau suhu yang abnormal dalam beberapa periode terakhir',
-      'Lakukan inspeksi fisik menyeluruh pada trafo, terutama pada bagian isolasi padat dan minyak',
-      'Uji kualitas minyak secara komprehensif (tan delta, kandungan air, keasaman dan kontaminan lainnya)',
-      'Perbaikan atau penggantian isolasi pada area yang dicurigai mengalami discharge dengan kerusakan termal',
-      'Penggantian atau pengolahan minyak (degassing, filtering, atau penggantian) untuk menghilangkan kontaminan',
-      'Optimasi pendinginan dengan memperbaiki sistem pendingin atau menambah pendingin tambahan',
-      'Mengurangi beban operasi jika memungkinkan untuk menghindari peningkatan panas berlebih',
-      'Tingkatkan frekuensi monitoring DGA menjadi setiap 2-4 bulan untuk memantau perkembangan gas'
+    rekomendasi: [
+      'Telusuri riwayat beban, suhu minyak, dan suhu belitan untuk memastikan adanya korelasi dengan indikasi fault.',
+      'Periksa adanya lonjakan beban atau suhu abnormal dalam beberapa periode terakhir.',
+      'Lakukan inspeksi menyeluruh pada isolasi padat dan minyak trafo.',
+      'Uji kualitas minyak (tan delta, kadar air, keasaman, dan kontaminan).',
+      'Perbaiki atau ganti isolasi pada area yang mengalami discharge dengan kerusakan termal.',
+      'Optimalkan sistem pendinginan dengan perbaikan atau penambahan unit pendingin.'
+    ],
+    preventif: [
+      'Tingkatkan frekuensi monitoring DGA menjadi setiap 2–4 bulan.',
+      'Kurangi beban operasi untuk mencegah peningkatan suhu lebih lanjut.',
+      'Lakukan penggantian atau pemrosesan minyak (degassing atau filtrasi) untuk menghilangkan kontaminan.'
     ]
   },
 
-  // Triangle 4 Faults
   'S': {
     description: 'Stray Gassing',
-    actions: [
-      'Telusuri riwayat beban trafo, suhu minyak, dan suhu belitan — stray gassing sering muncul akibat fluktuasi suhu atau beban tinggi non-kronis',
-      'Evaluasi apakah terdapat overload ringan atau pencapaian suhu hotspot yang tinggi yang tidak berdampak langsung',
-      'Periksa kondisi fisik trafo: apakah ada tanda-tanda degradasi termal ringan, kotoran, atau seal bocor',
-      'Lakukan uji kualitas minyak (tan delta, water content) untuk mengetahui apakah minyak mulai menua atau teroksidasi',
-      'Degassing minyak bila level gas mendekati batas operasional',
-      'Filtering minyak untuk memperlambat penuaan dan menurunkan potensi pelepasan gas',
-      'Pendinginan tambahan jika suhu operasional terlalu tinggi secara lokal',
-      'Lakukan monitoring DGA secara berkala (3-6 bulan) untuk memastikan pola gas tetap stabil'
+    rekomendasi: [
+      'Telusuri riwayat beban trafo dan suhu minyak untuk memastikan penyebab fluktuasi gas.',
+      'Periksa kondisi fisik trafo terhadap degradasi termal ringan, kotoran, atau kebocoran seal.',
+      'Lakukan uji kualitas minyak untuk menentukan tingkat penuaan atau oksidasi minyak.',
+      'Degassing minyak bila level gas mendekati batas operasional.',
+      'Lakukan filtering minyak untuk memperlambat penuaan dan menurunkan potensi pelepasan gas.'
+    ],
+    preventif: [
+      'Lakukan DGA setiap 3–6 bulan untuk memastikan kestabilan pola gas.',
+      'Tambahkan pendinginan jika suhu operasional terlalu tinggi secara lokal.'
     ]
   },
 
   'C': {
     description: 'Corona',
-    actions: [
-      'Monitoring rutin Dissolved Gas Analysis menggunakan metode Duval Triangle untuk mendeteksi gas yang khas pada corona',
-      'Pemeriksaan visual dan pembersihan berkala pada permukaan isolator, bushing, sambungan terminal',
-      'Pengecekan dan pengencangan sambungan listrik agar tidak terjadi kontak longgar',
-      'Peningkatan kualitas minyak isolasi melalui pengujian breakdown voltage dan filtrasi rutin (3-6 bulan)',
-      'Pengawasan lingkungan sekitar trafo agar terhindar dari sumber polutan atau kelembaban tinggi',
-      'Pelaksanaan pemeliharaan preventif terjadwal dengan interval monitoring (3-6 bulan)',
-      'Monitoring lebih sering jika hasil analisa Duval Triangle menunjukkan tren kenaikan partial discharge'
+    rekomendasi: [
+      'Lakukan monitoring rutin DGA dengan analisis Duval Triangle untuk mendeteksi gas khas corona.',
+      'Lakukan pembersihan visual pada permukaan isolator, bushing, dan sambungan terminal.',
+      'Periksa dan kencangkan sambungan listrik untuk menghindari kontak longgar.',
+      'Uji kualitas minyak isolasi (breakdown voltage dan filtrasi) secara berkala.',
+      'Pastikan area sekitar transformator bersih dan bebas kelembaban tinggi.'
+    ],
+    preventif: [
+      'Lakukan pemeliharaan preventif terjadwal setiap 3–6 bulan.',
+      'Lakukan monitoring tambahan jika hasil DGA menunjukkan tren kenaikan partial discharge.'
     ]
   },
 
   'ND': {
     description: 'Normal Degradation',
-    actions: [
-      'Resampling secara berkala untuk monitoring perkembangan gas yang terlarut dalam minyak trafo',
-      'CO (Karbon Dioksida) LOW: resampling berkala dalam rentang waktu 4-8 bulan',
-      'CO (Karbon Dioksida) MEDIUM: resampling berkala dalam rentang waktu 2-4 bulan',
-      'CO (Karbon Dioksida) HIGH: resampling berkala dalam rentang waktu 2-4 bulan',
-      'Monitoring rutin kondisi umum transformator',
-      'Pemeliharaan preventif sesuai jadwal normal'
+    rekomendasi: [
+      'Lakukan resampling secara berkala untuk memantau perkembangan gas dalam minyak trafo.',
+      'Pantau kondisi umum transformator secara rutin.',
+      'Pastikan sistem pendingin dan proteksi tetap berfungsi normal.'
+    ],
+    preventif: [
+      'Lakukan pemeliharaan preventif sesuai jadwal standar.',
+      'Gunakan tren hasil DGA untuk memastikan degradasi masih dalam batas normal.'
     ]
   },
 
-  // Triangle 5 Faults
   'O': {
     description: 'Overheating < 200°C',
-    actions: [
-      'Monitoring suhu operasional transformator secara kontinyu',
-      'Periksa sistem pendinginan dan ventilasi',
-      'Evaluasi beban operasional dan distribusi panas',
-      'Pemeriksaan sambungan dan kontak listrik',
-      'Monitoring DGA secara berkala untuk deteksi dini peningkatan suhu'
+    rekomendasi: [
+      'Monitoring suhu operasional transformator secara berkelanjutan.',
+      'Periksa sistem pendinginan dan ventilasi untuk memastikan tidak ada hambatan aliran udara.',
+      'Evaluasi distribusi panas dan keseimbangan beban transformator.',
+      'Periksa sambungan listrik dari indikasi pemanasan lokal.'
+    ],
+    preventif: [
+      'Lakukan DGA secara berkala untuk mendeteksi gas akibat overheating.',
+      'Pastikan sistem ventilasi dan pendinginan bebas debu dan berfungsi optimal.'
     ]
   },
 
   'NORMAL': {
     description: 'Kondisi Normal',
-    actions: [
-      'Resampling secara berkala untuk monitoring perkembangan gas yang terlarut dalam minyak trafo',
-      'Monitoring DGA rutin sesuai jadwal standar',
-      'Pemeliharaan preventif berkala sesuai prosedur',
-      'Dokumentasi kondisi normal untuk trend analysis'
+    rekomendasi: [
+      'Lakukan resampling DGA secara berkala untuk pemantauan tren gas.',
+      'Lakukan monitoring DGA sesuai jadwal standar.',
+      'Pastikan dokumentasi kondisi normal dilakukan untuk analisis tren jangka panjang.'
+    ],
+    preventif: [
+      'Lakukan pemeliharaan preventif rutin sesuai prosedur standar operasional.'
     ]
   }
 };
