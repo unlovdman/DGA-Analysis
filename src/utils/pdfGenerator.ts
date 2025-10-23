@@ -420,7 +420,7 @@ export const generateDGAPDF = async (data: PDFGenerationData): Promise<void> => 
         doc.setFont('helvetica', 'italic');
         doc.setTextColor(100, 100, 100);
         const noteLines = doc.splitTextToSize(`Note: ${rec.note}`, contentWidth - 8);
-        noteLines.forEach((line) => {
+        noteLines.forEach((line: string) => {
           doc.text(line, margin + 5, yPosition);
           yPosition += 4;
         });
@@ -490,7 +490,7 @@ export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData)
     ['Tanggal Analisis', data.breakdownData.createdAt instanceof Date 
       ? data.breakdownData.createdAt.toLocaleDateString('id-ID') 
       : new Date(data.breakdownData.createdAt).toLocaleDateString('id-ID')],
-    ['Standar Pengujian', 'IEC 60156-95 dengan batasan IEC 60422:2013']
+    ['Standar Pengujian', 'IEC 60156-95 dengan batasan IEC 60422:2024']
   ];
 
   doc.setFont('helvetica', 'normal');
@@ -509,7 +509,7 @@ export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData)
   // Introduction paragraph - smaller
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
-  const introText = 'Berikut ini adalah hasil pengujian Breakdown Voltage menggunakan standar IEC 60156-95 dengan batasan IEC 60422:2013:';
+  const introText = 'Berikut ini adalah hasil pengujian Breakdown Voltage menggunakan standar IEC 60156-95 dengan batasan IEC 60422:2024:';
   doc.text(introText, margin, yPosition);
   yPosition += 15;
 
@@ -598,7 +598,7 @@ export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData)
   doc.setFontSize(9); // Reduced from 11
   doc.setFont('helvetica', 'normal');
   
-  const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${data.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2013 transformator tenaga ${data.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${data.breakdownData.transformerType} (${data.transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${data.breakdownData.average} kV termasuk dalam kondisi ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${data.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : data.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${data.breakdownData.recommendation.toLowerCase()} dengan tindakan pemeliharaan preventif ${BREAKDOWN_VOLTAGE_PREVENTIVE_MAINTENANCE[data.breakdownData.result]}.`;
+  const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${data.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2024 transformator tenaga ${data.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${data.breakdownData.transformerType} (${data.transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${data.breakdownData.average} kV termasuk dalam kondisi ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${data.breakdownData.result === 'good' ? 'baik' : data.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${data.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : data.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${data.breakdownData.recommendation.toLowerCase()} dengan tindakan pemeliharaan preventif ${BREAKDOWN_VOLTAGE_PREVENTIVE_MAINTENANCE[data.breakdownData.result]}.`;
 
   // Split text into justified lines
   const words = resultText.split(' ');
@@ -662,7 +662,7 @@ export const generateBreakdownVoltagePDF = async (data: BreakdownVoltagePDFData)
 
   const standards = [
     '• IEC 60156-95: Insulating liquids - Determination of the breakdown voltage at power frequency - Test method',
-    '• IEC 60422:2013: Mineral insulating oils in electrical equipment - Supervision and maintenance guidance'
+    '• IEC 60422:2024: Mineral insulating oils in electrical equipment - Supervision and maintenance guidance'
   ];
 
   doc.setFont('helvetica', 'normal');
@@ -805,7 +805,7 @@ export const generateBulkBreakdownVoltagePDF = async (historyItems: any[]): Prom
       ['ID Transformator', historyItem.breakdownData.idTrafo || 'N/A'],
       ['Jenis Transformator', `Type ${historyItem.breakdownData.transformerType} (${transformerRange.voltageRange})`],
       ['Tanggal Analisis', new Date(historyItem.createdAt).toLocaleDateString('id-ID')],
-      ['Standar Pengujian', 'IEC 60156-95 dengan batasan IEC 60422:2013']
+      ['Standar Pengujian', 'IEC 60156-95 dengan batasan IEC 60422:2024']
     ];
 
     doc.setFont('helvetica', 'normal');
@@ -824,7 +824,7 @@ export const generateBulkBreakdownVoltagePDF = async (historyItems: any[]): Prom
     // Introduction paragraph
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    const introText = 'Berikut ini adalah hasil pengujian Breakdown Voltage menggunakan standar IEC 60156-95 dengan batasan IEC 60422:2013:';
+    const introText = 'Berikut ini adalah hasil pengujian Breakdown Voltage menggunakan standar IEC 60156-95 dengan batasan IEC 60422:2024:';
     doc.text(introText, margin, yPosition);
     yPosition += 15;
 
@@ -902,7 +902,7 @@ export const generateBulkBreakdownVoltagePDF = async (historyItems: any[]): Prom
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     
-    const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${historyItem.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2013 transformator tenaga ${historyItem.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${historyItem.breakdownData.transformerType} (${transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${historyItem.breakdownData.average} kV termasuk dalam kondisi ${historyItem.breakdownData.result === 'good' ? 'baik' : historyItem.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${historyItem.breakdownData.result === 'good' ? 'baik' : historyItem.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${historyItem.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : historyItem.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${historyItem.breakdownData.recommendation.toLowerCase()}`;
+    const resultText = `Dari hasil pengujian Breakdown Voltage (Tegangan Tembus), diperoleh nilai ${historyItem.breakdownData.average} kV. Berdasarkan batasan IEC 60422:2024 transformator tenaga ${historyItem.breakdownData.idTrafo || 'ini'} termasuk jenis trafo ${historyItem.breakdownData.transformerType} (${transformerRange.voltageRange}), yang dimana nilai tegangan tembus ${historyItem.breakdownData.average} kV termasuk dalam kondisi ${historyItem.breakdownData.result === 'good' ? 'baik' : historyItem.breakdownData.result === 'fair' ? 'cukup' : 'buruk'}. Kondisi kualitas isolasi tegangan tembus dalam kategori ${historyItem.breakdownData.result === 'good' ? 'baik' : historyItem.breakdownData.result === 'fair' ? 'fair' : 'buruk'} yang dimana minyak isolasi ${historyItem.breakdownData.result === 'good' ? 'berfungsi dengan baik dan memenuhi standar' : historyItem.breakdownData.result === 'fair' ? 'masih berfungsi, tetapi kualitasnya menurun' : 'memerlukan perhatian khusus dan perbaikan segera'}. Oleh karena itu, rekomendasi berdasarkan hasil analisis yaitu ${historyItem.breakdownData.recommendation.toLowerCase()}`;
 
     // Split text into justified lines
     const words = resultText.split(' ');
@@ -966,7 +966,7 @@ export const generateBulkBreakdownVoltagePDF = async (historyItems: any[]): Prom
 
     const standards = [
       '• IEC 60156-95: Insulating liquids - Determination of the breakdown voltage at power frequency - Test method',
-      '• IEC 60422:2013: Mineral insulating oils in electrical equipment - Supervision and maintenance guidance'
+      '• IEC 60422:2024: Mineral insulating oils in electrical equipment - Supervision and maintenance guidance'
     ];
 
     doc.setFont('helvetica', 'normal');

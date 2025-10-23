@@ -505,6 +505,90 @@ const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
 
   // Generate analysis result from manual inputs
   const generateManualAnalysisResult = (triangles: ManualTriangleData[], gasConcentrations: Partial<GasConcentration>): AnalysisResult => {
+    // Check if all triangles are Data 1
+    const allData1 = triangles.every(t => t.dataClassification === 'Data 1');
+    
+    if (allData1) {
+      // For Data 1, use CO analysis only
+      const coAnalysisResults = triangles.map(t => t.coAnalysisResult).filter(Boolean);
+      
+      if (coAnalysisResults.length === 0) {
+        return {
+          triangle1: undefined,
+          triangle4: undefined,
+          triangle5: undefined,
+          overallRecommendation: 'Analisis manual selesai. Tindak lanjuti sesuai fault yang terdeteksi.',
+          recommendations: [FAULT_RECOMMENDATIONS.NORMAL],
+          severity: 'low'
+        };
+      }
+      
+      // Get the highest CO severity
+      const highestSeverity = coAnalysisResults.reduce((highest: COAnalysisResult, current: COAnalysisResult) => {
+        const severityOrder = { 'LOW': 1, 'MEDIUM': 2, 'HIGH': 3 };
+        return severityOrder[current.severity] > severityOrder[highest.severity] ? current : highest;
+      }, coAnalysisResults[0]!);
+      
+      // Map CO severity to analysis severity
+      let analysisSeverity: 'low' | 'medium' | 'high' | 'critical' = 'low';
+      if (highestSeverity.severity === 'HIGH') {
+        analysisSeverity = 'high';
+      } else if (highestSeverity.severity === 'MEDIUM') {
+        analysisSeverity = 'medium';
+      } else {
+        analysisSeverity = 'low';
+      }
+      
+      // Generate recommendation based on CO analysis
+      let overallRecommendation = '';
+      if (highestSeverity.severity === 'HIGH') {
+        overallRecommendation = 'HIGH: CO Level tinggi terdeteksi. Continue Operation dengan resampling 1-2 bulan.';
+      } else if (highestSeverity.severity === 'MEDIUM') {
+        overallRecommendation = 'MEDIUM: CO Level sedang terdeteksi. Continue Operation dengan resampling 2-4 bulan.';
+      } else {
+        overallRecommendation = 'LOW: CO Level rendah terdeteksi. Continue Operation dengan resampling 4-8 bulan.';
+      }
+      
+      // Create recommendations based on CO analysis
+      const recommendations: FaultRecommendationConfig[] = [];
+      coAnalysisResults.forEach(coResult => {
+        if (coResult) {
+          const recommendationKey = `DATA1_${coResult.severity}` as keyof typeof FAULT_RECOMMENDATIONS;
+          if (FAULT_RECOMMENDATIONS[recommendationKey]) {
+            recommendations.push(FAULT_RECOMMENDATIONS[recommendationKey]);
+          }
+        }
+      });
+      
+      return {
+        triangle1: triangles.find(t => t.triangleMethod === 1)?.isCompleted ? {
+          triangleMethod: 1,
+          faultType: 'NORMAL' as any,
+          confidence: 1.0,
+          coordinates: { x: 0, y: 0 },
+          gasRatios: { gas1: 0, gas2: 0, gas3: 0 }
+        } : undefined,
+        triangle4: triangles.find(t => t.triangleMethod === 4)?.isCompleted ? {
+          triangleMethod: 4,
+          faultType: 'NORMAL' as any,
+          confidence: 1.0,
+          coordinates: { x: 0, y: 0 },
+          gasRatios: { gas1: 0, gas2: 0, gas3: 0 }
+        } : undefined,
+        triangle5: triangles.find(t => t.triangleMethod === 5)?.isCompleted ? {
+          triangleMethod: 5,
+          faultType: 'NORMAL' as any,
+          confidence: 1.0,
+          coordinates: { x: 0, y: 0 },
+          gasRatios: { gas1: 0, gas2: 0, gas3: 0 }
+        } : undefined,
+        overallRecommendation,
+        recommendations,
+        severity: analysisSeverity
+      };
+    }
+    
+    // Original logic for Data 2+ (fault-based analysis)
     const faultTypes = triangles.map(t => t.selectedFault).filter(Boolean);
     const uniqueFaults = [...new Set(faultTypes)];
     
@@ -1448,7 +1532,10 @@ const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
                           {analysisState.overallResult.triangle1.faultType}
                         </div>
                         <div className="text-sm text-gray-500">
-                          Manual Input (100% Accurate)
+                          {analysisState.triangles.some(t => t.dataClassification === 'Data 1') 
+                            ? 'CO Analysis (Data 1)' 
+                            : 'Manual Input (100% Accurate)'
+                          }
                         </div>
                       </div>
                     </div>
@@ -1464,7 +1551,10 @@ const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
                           {analysisState.overallResult.triangle4.faultType}
                         </div>
                         <div className="text-sm text-gray-500">
-                          Manual Input (100% Accurate)
+                          {analysisState.triangles.some(t => t.dataClassification === 'Data 1') 
+                            ? 'CO Analysis (Data 1)' 
+                            : 'Manual Input (100% Accurate)'
+                          }
                         </div>
                       </div>
                     </div>
@@ -1480,7 +1570,10 @@ const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
                           {analysisState.overallResult.triangle5.faultType}
                         </div>
                         <div className="text-sm text-gray-500">
-                          Manual Input (100% Accurate)
+                          {analysisState.triangles.some(t => t.dataClassification === 'Data 1') 
+                            ? 'CO Analysis (Data 1)' 
+                            : 'Manual Input (100% Accurate)'
+                          }
                         </div>
                       </div>
                     </div>

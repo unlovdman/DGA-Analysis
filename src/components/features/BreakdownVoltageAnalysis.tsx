@@ -356,7 +356,7 @@ const BreakdownVoltageAnalysis: React.FC<BreakdownVoltageAnalysisProps> = ({ onB
                       Hasil: {analysisData.result?.toUpperCase()} ({analysisData.average} kV)
                     </h4>
                     <p className="leading-relaxed text-sm">
-                      Berdasarkan standar IEC 60422:2013 untuk transformator jenis {analysisData.transformerType} 
+                      Berdasarkan standar IEC 60422:2024 untuk transformator jenis {analysisData.transformerType} 
                       ({selectedRange?.voltageRange}), nilai tegangan tembus {analysisData.average} kV 
                       termasuk dalam kondisi <strong>{analysisData.result}</strong>.
                     </p>

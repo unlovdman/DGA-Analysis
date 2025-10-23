@@ -81,7 +81,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectAnalysis }) => {
                     isDark ? 'text-yellow-200/80' : 'text-yellow-700'
                   }`}>
                     METODA IEC 60156-95<br />
-                    BATASAN IEC 60422:2013
+                    BATASAN IEC 60422:2024
                   </p>
                   
                   <div className={`space-y-3 text-base ${

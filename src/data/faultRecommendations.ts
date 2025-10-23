@@ -189,6 +189,36 @@ export const FAULT_RECOMMENDATIONS: Record<string, FaultRecommendationConfig> = 
     preventif: [
       'Lakukan pemeliharaan preventif rutin sesuai prosedur standar operasional.'
     ]
+  },
+
+  'DATA1_LOW': {
+    description: 'Data 1 - CO Level LOW',
+    rekomendasi: [
+      'Continue Operation'
+    ],
+    preventif: [
+      'CO dalam limit Low dilakukan resampling berkala dalam rentang waktu 4-8 bulan.'
+    ]
+  },
+
+  'DATA1_MEDIUM': {
+    description: 'Data 1 - CO Level MEDIUM',
+    rekomendasi: [
+      'Continue Operation'
+    ],
+    preventif: [
+      'CO dalam limit Medium dilakukan resampling berkala dalam rentang waktu 2-4 bulan.'
+    ]
+  },
+
+  'DATA1_HIGH': {
+    description: 'Data 1 - CO Level HIGH',
+    rekomendasi: [
+      'Continue Operation'
+    ],
+    preventif: [
+      'CO dalam limit High dilakukan resampling berkala dalam rentang waktu 1-2 bulan.'
+    ]
   }
 };
 
