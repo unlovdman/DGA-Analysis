@@ -510,7 +510,10 @@ const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
     
     if (allData1) {
       // For Data 1, use CO analysis only
-      const coAnalysisResults = triangles.map(t => t.coAnalysisResult).filter(Boolean);
+      const coAnalysisResults = triangles
+  .map(t => t.coAnalysisResult)
+  .filter((r): r is COAnalysisResult => r !== null);
+
       
       if (coAnalysisResults.length === 0) {
         return {
