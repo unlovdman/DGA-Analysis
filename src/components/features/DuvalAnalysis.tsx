@@ -1509,7 +1509,7 @@ const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
                 </h3>
 
                 {/* Overall Recommendation */}
-                {/* <div className={`p-6 rounded-xl border mb-6 ${getSeverityColor(analysisState.overallResult.severity)}`}>
+                <div className={`p-6 rounded-xl border mb-6 ${getSeverityColor(analysisState.overallResult.severity)}`}>
                   <div className="flex items-start">
                     {getSeverityIcon(analysisState.overallResult.severity)}
                     <div className="ml-4">
@@ -1521,7 +1521,7 @@ const DuvalAnalysis: React.FC<DuvalAnalysisProps> = ({ onBack }) => {
                       </p>
                     </div>
                   </div>
-                </div> */}
+                </div>
 
                 {/* Triangle Results */}
                 <div className="grid md:grid-cols-3 gap-6">
