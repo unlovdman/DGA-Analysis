@@ -172,7 +172,12 @@ const DuvalTriangleCanvas: React.FC<DuvalTriangleCanvasProps> = ({
             const dy = end.y - start.y;
             let angle = Math.atan2(dy, dx);
 
-            const offset = 55; // Increased offset
+            // Different offset for each side - right side needs more space
+            let offset = 65; // Default for left and bottom
+            if (align === 'right') {
+                offset = 45; // Fine-tuned to be close but outside triangle
+            }
+
             let lx = 0, ly = 0;
 
             // Calculate normal vector for offset
@@ -185,9 +190,9 @@ const DuvalTriangleCanvas: React.FC<DuvalTriangleCanvasProps> = ({
                 lx = midX - nx * offset;
                 ly = midY - ny * offset;
             } else if (align === 'right') {
-                // Outward is (nx, ny)
-                lx = midX + nx * offset;
-                ly = midY + ny * offset;
+                // For right side, reverse the normal direction to push label outward to the right
+                lx = midX - nx * offset;
+                ly = midY - ny * offset;
             } else { // bottom
                 lx = midX;
                 ly = midY + offset;
@@ -274,7 +279,7 @@ const DuvalTriangleCanvas: React.FC<DuvalTriangleCanvasProps> = ({
             ctx.font = 'bold 12px Arial';
             ctx.textAlign = 'left';
 
-            const text = 'Your Data';
+            const text = '';
             const tm = ctx.measureText(text);
 
             // Draw background for text
